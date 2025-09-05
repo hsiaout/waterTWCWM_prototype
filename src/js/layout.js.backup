@@ -170,7 +170,7 @@ class LayoutManager {
 			}
 			
 			container.innerHTML = `
-				<div id="panel-wrapper" class="d-flex w-100 h-100">
+				<div id="panel-wrapper">
 					<div id="pane1" class="panel-container" data-panel="pane1">
 						<div class="panel-header">
 							<div class="panel-title">

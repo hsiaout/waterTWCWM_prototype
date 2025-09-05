@@ -12,6 +12,7 @@ export const CONFIG = {
 	
 	// 存儲配置
 	STORAGE_KEY: 'panelLayoutState',
+	ENABLE_STORAGE: false,  // 是否啟用 localStorage 儲存面板狀態
 	
 	// 主題映射配置
 	CONTENT_MAP: {

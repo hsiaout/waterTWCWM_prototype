@@ -12,16 +12,16 @@ export class UIRenderer {
 			}
 			
 			container.innerHTML = `
-				<div id="panel-wrapper" class="d-flex w-100 h-100">
+				<div id="panel-wrapper">
 					<div id="pane1" class="panel-container" data-panel="pane1">
 						<div class="panel-header">
 							<div class="panel-title">
-								<button class="btn btn-light btn-sm" type="button" data-bs-toggle="collapse" data-bs-target="#pane1-filter" aria-expanded="false">
+								<button class="btn btn-light" type="button" data-bs-toggle="collapse" data-bs-target="#pane1-filter" aria-expanded="false">
 									<i class="fas fa-filter me-1"></i>篩選
 								</button>
 							</div>
 							<div class="panel-controls">
-								<button class="btn btn-light btn-sm ms-2 auxiliary-btn" type="button" title="開啟輔助面板" style="display: none;">
+								<button class="btn btn-light ms-2 auxiliary-btn" type="button" title="開啟輔助面板" style="display: none;">
 									<i class="fas fa-window-restore me-1"></i>輔助面板
 								</button>
 							</div>
@@ -78,12 +78,12 @@ export class UIRenderer {
 									<option value="surround">環景</option>
 									<option value="PID">圖譜</option>
 								</select>
-								<button class="btn btn-light btn-sm ms-2" type="button" data-bs-toggle="collapse" data-bs-target="#pane2-filter" aria-expanded="false">
+								<button class="btn btn-light ms-2" type="button" data-bs-toggle="collapse" data-bs-target="#pane2-filter" aria-expanded="false">
 									<i class="fas fa-filter me-1"></i>篩選
 								</button>
 							</div>
 							<div class="panel-controls">
-								<button class="btn btn-sm btn-light hide-panel2-btn" type="button" title="隱藏輔助面板">
+								<button class="btn btn-light hide-panel2-btn" type="button" title="隱藏輔助面板">
 									<i class="fas fa-chevron-right me-1"></i>隱藏
 								</button>
 							</div>

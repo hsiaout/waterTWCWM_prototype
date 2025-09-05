@@ -8,43 +8,60 @@ export class StateManager {
 		this.loadState();
 	}
 
-	// 保存狀態到 localStorage
+	// 保存當前狀態
 	saveState() {
 		return ErrorHandler.safeExecute(() => {
-			const stateToSave = JSON.stringify(this.state);
-			localStorage.setItem(CONFIG.STORAGE_KEY, stateToSave);
+			// 如果啟用了 localStorage，則同時保存到 localStorage
+			if (CONFIG.ENABLE_STORAGE) {
+				const stateToSave = JSON.stringify(this.state);
+				localStorage.setItem(CONFIG.STORAGE_KEY, stateToSave);
+			}
+			
+			// 觸發狀態更新事件（如果需要的話）
+			this.notifyStateChange();
+			
 			return true;
 		}, false, 'Save state operation');
 	}
+	
+	// 通知狀態更新（可以在這裡添加更多狀態同步邏輯）
+	notifyStateChange() {
+		// 這裡可以添加其他狀態同步的邏輯
+		// 例如：觸發自定義事件、更新其他相關組件等
+	}
 
-	// 從 localStorage 載入狀態
+	// 載入狀態
 	loadState() {
 		return ErrorHandler.safeExecute(() => {
-			const saved = localStorage.getItem(CONFIG.STORAGE_KEY);
-			if (saved) {
-				try {
-					const parsedState = JSON.parse(saved);
-					
-					// 驗證載入的狀態結構
-					if (this.validateState(parsedState)) {
-						this.state = parsedState;
-						console.log('Layout state loaded from localStorage');
-						return true;
-					} else {
-						console.warn('Invalid state structure, using default state');
-						this.state = { ...CONFIG.DEFAULT_STATE };
-						return false;
+			// 先設定預設狀態
+			this.state = { ...CONFIG.DEFAULT_STATE };
+			
+			// 如果啟用了 localStorage，嘗試從中載入
+			if (CONFIG.ENABLE_STORAGE) {
+				const saved = localStorage.getItem(CONFIG.STORAGE_KEY);
+				if (saved) {
+					try {
+						const parsedState = JSON.parse(saved);
+						
+						// 驗證載入的狀態結構
+						if (this.validateState(parsedState)) {
+							this.state = parsedState;
+							console.log('Layout state loaded from localStorage');
+							return true;
+						} else {
+							console.warn('Invalid state structure, keeping default state');
+						}
+					} catch (parseError) {
+						console.error('Failed to parse saved state:', parseError);
 					}
-				} catch (parseError) {
-					console.error('Failed to parse saved state:', parseError);
-					this.state = { ...CONFIG.DEFAULT_STATE };
-					return false;
+				} else {
+					console.log('No saved state found, using default state');
 				}
 			} else {
-				console.log('No saved state found, using default state');
-				this.state = { ...CONFIG.DEFAULT_STATE };
-				return true;
+				console.log('Storage disabled, using default state');
 			}
+			
+			return true;
 		}, false, 'Load state operation');
 	}
 
