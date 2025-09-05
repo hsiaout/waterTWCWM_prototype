@@ -16,12 +16,14 @@ export class LayoutManager {
 	}
 
 	// 初始化佈局
-	async init() {
-		// 創建 UI 結構
+	async init(options = { skipContentLoad: false }) {
+		// 創建 UI 結構（如果需要）
 		UIRenderer.createLayout();
 		
-		// 載入內容
-		await this.contentLoader.loadPanelContents();
+		// 如果指定跳過內容載入，則不載入內容
+		if (!options.skipContentLoad) {
+			await this.contentLoader.loadPanelContents();
+		}
 		
 		// 綁定事件
 		this.eventHandler.bindEvents();
@@ -30,6 +32,8 @@ export class LayoutManager {
 		// 應用初始狀態
 		this.applyState();
 		this.updateAuxiliaryButton();
+		
+		return true;
 	}
 
 	// 應用狀態

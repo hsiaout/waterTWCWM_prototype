@@ -6,9 +6,18 @@ export class UIRenderer {
 	// 創建佈局結構
 	static createLayout() {
 		return ErrorHandler.safeExecute(() => {
+			// 檢查是否已經存在面板結構
+			const existingWrapper = document.querySelector('#panel-wrapper');
+			if (existingWrapper) {
+				console.log('使用既有的面板結構');
+				return true;
+			}
+			
+			// 如果不存在，則嘗試在容器中創建
 			const container = ErrorHandler.safeQuerySelector('#main-layout-container');
 			if (!container) {
-				throw new Error('Main layout container not found');
+				console.log('找不到主容器，使用既有的面板結構');
+				return true;
 			}
 			
 			container.innerHTML = `

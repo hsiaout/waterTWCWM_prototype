@@ -194,14 +194,8 @@
             layoutManager = new LayoutManager();
             
             // 跳過 createLayout，因為 HTML 中已經有佈局結構
-            // await layoutManager.init();  
-            
-            // 手動初始化必要的部分
-            await layoutManager.contentLoader.loadPanelContents();
-            layoutManager.eventHandler.bindEvents();
-            layoutManager.dragHandler.bindDragEvents();
-            layoutManager.applyState();
-            layoutManager.updateAuxiliaryButton();
+            // 初始化佈局管理器，但跳過內容載入（因為我們使用自己的 HTML 結構）
+            await layoutManager.init({ skipContentLoad: true });
             
             // 初始更新寬度顯示
             updateWidthDisplay();
