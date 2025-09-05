@@ -42,7 +42,7 @@ export class LayoutManager {
 	// 切換面板顯示/隱藏
 	togglePanel(panelId) {
 		const currentState = this.stateManager.getState();
-		const otherPanelId = panelId === 'pane1' ? 'pane2' : 'pane1';
+		const otherPanelId = panelId === 'panel1' ? 'panel2' : 'panel1';
 		
 		if (currentState[panelId].visible) {
 			// 隱藏面板
@@ -67,7 +67,7 @@ export class LayoutManager {
 	// 最大化面板
 	maximizePanel(panelId) {
 		const currentState = this.stateManager.getState();
-		const otherPanelId = panelId === 'pane1' ? 'pane2' : 'pane1';
+		const otherPanelId = panelId === 'panel1' ? 'panel2' : 'panel1';
 		
 		// 如果已經最大化，則恢復
 		if (currentState[panelId].width >= CONFIG.MAXIMIZE_THRESHOLD) {
@@ -95,8 +95,8 @@ export class LayoutManager {
 	// 顯示 panel2（輔助面板）
 	showPanel2() {
 		const newState = {
-			pane1: { width: CONFIG.DEFAULT_WIDTH, visible: true },
-			pane2: { width: CONFIG.DEFAULT_WIDTH, visible: true }
+			panel1: { width: CONFIG.DEFAULT_WIDTH, visible: true },
+			panel2: { width: CONFIG.DEFAULT_WIDTH, visible: true }
 		};
 		this.stateManager.setState(newState);
 		this.applyState();
@@ -107,8 +107,8 @@ export class LayoutManager {
 	// 隱藏 panel2
 	hidePanel2() {
 		const newState = {
-			pane1: { width: 100, visible: true },
-			pane2: { width: 0, visible: false }
+			panel1: { width: 100, visible: true },
+			panel2: { width: 0, visible: false }
 		};
 		this.stateManager.setState(newState);
 		this.applyState();
