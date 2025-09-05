@@ -24,20 +24,20 @@ export const CONFIG = {
 	
 	// 預設狀態配置
 	DEFAULT_STATE: {
-		pane1: { width: 50, visible: true },
-		pane2: { width: 50, visible: true }
+		panel1: { width: 50, visible: true },
+		panel2: { width: 50, visible: true }
 	}
 };
 
 // 面板配置
 export const PANELS = [
 	{
-		id: "pane1",
+		id: "panel1",
 		html: "./src/page/list.html",
 		js: "./src/page/list.js",
 	},
 	{
-		id: "pane2",
+		id: "panel2",
 		html: "./src/page/map.html",
 		js: "",
 	},

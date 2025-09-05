@@ -87,7 +87,7 @@
 	<div class="main-content">
 		<div id="panel-wrapper">
 			<!-- Panel 1 -->
-			<div id="pane1" class="panel-container" style="width: 50%;">
+			<div id="panel1" class="panel-container" style="width: 50%;">
 				<div class="panel-header">
 					<div class="panel-title">
 						<strong>Panel 1</strong>
@@ -113,7 +113,7 @@
 			</div>
 			
 			<!-- Panel 2 -->
-			<div id="pane2" class="panel-container" style="width: 50%;">
+			<div id="panel2" class="panel-container" style="width: 50%;">
 				<div class="panel-header">
 					<div class="panel-title">
 						<strong>Panel 2</strong>
@@ -160,20 +160,20 @@
         
         window.closePanel1 = function() {
             if (layoutManager) {
-                layoutManager.togglePanel('pane1');
+                layoutManager.togglePanel('panel1');
             }
         };
         
         window.closePanel2 = function() {
             if (layoutManager) {
-                layoutManager.togglePanel('pane2');
+                layoutManager.togglePanel('panel2');
             }
         };
         
         window.showCurrentState = function() {
             if (layoutManager) {
                 const state = layoutManager.getState();
-                alert(`目前狀態:\nPanel 1: ${state.pane1.width.toFixed(1)}%, visible: ${state.pane1.visible}\nPanel 2: ${state.pane2.width.toFixed(1)}%, visible: ${state.pane2.visible}`);
+                alert(`目前狀態:\nPanel 1: ${state.panel1.width.toFixed(1)}%, visible: ${state.panel1.visible}\nPanel 2: ${state.panel2.width.toFixed(1)}%, visible: ${state.panel2.visible}`);
             }
         };
         
@@ -184,8 +184,8 @@
                 const panel1WidthSpan = document.getElementById('panel1-width');
                 const panel2WidthSpan = document.getElementById('panel2-width');
                 
-                if (panel1WidthSpan) panel1WidthSpan.textContent = state.pane1.width.toFixed(1) + '%';
-                if (panel2WidthSpan) panel2WidthSpan.textContent = state.pane2.width.toFixed(1) + '%';
+                if (panel1WidthSpan) panel1WidthSpan.textContent = state.panel1.width.toFixed(1) + '%';
+                if (panel2WidthSpan) panel2WidthSpan.textContent = state.panel2.width.toFixed(1) + '%';
             }
         }
         

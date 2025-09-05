@@ -72,7 +72,7 @@ export class StateManager {
 				return false;
 			}
 			
-			const requiredPanes = ['pane1', 'pane2'];
+			const requiredPanes = ['panel1', 'panel2'];
 			const requiredProps = ['width', 'visible'];
 			
 			for (const pane of requiredPanes) {

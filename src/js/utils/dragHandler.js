@@ -37,14 +37,14 @@ export class DragHandler {
 			e.preventDefault();
 			this.isDragging = true;
 			
-			const pane1 = ErrorHandler.safeQuerySelector('#pane1');
-			const pane2 = ErrorHandler.safeQuerySelector('#pane2');
+			const panel1 = ErrorHandler.safeQuerySelector('#panel1');
+			const panel2 = ErrorHandler.safeQuerySelector('#panel2');
 			const resizer = ErrorHandler.safeQuerySelector('#resizer');
 			
 			// 移除過渡效果
-			if (pane1 && pane2) {
-				pane1.classList.add('no-transition');
-				pane2.classList.add('no-transition');
+			if (panel1 && panel2) {
+				panel1.classList.add('no-transition');
+				panel2.classList.add('no-transition');
 			}
 			
 			if (resizer) {
@@ -74,8 +74,8 @@ export class DragHandler {
 			
 			// 更新狀態
 			const newState = {
-				pane1: { ...this.layoutManager.stateManager.state.pane1, width: clampedPercentage },
-				pane2: { ...this.layoutManager.stateManager.state.pane2, width: 100 - clampedPercentage }
+				panel1: { ...this.layoutManager.stateManager.state.panel1, width: clampedPercentage },
+				panel2: { ...this.layoutManager.stateManager.state.panel2, width: 100 - clampedPercentage }
 			};
 			
 			this.layoutManager.stateManager.setState(newState);
@@ -90,14 +90,14 @@ export class DragHandler {
 		return ErrorHandler.safeExecute(() => {
 			this.isDragging = false;
 			
-			const pane1 = ErrorHandler.safeQuerySelector('#pane1');
-			const pane2 = ErrorHandler.safeQuerySelector('#pane2');
+			const panel1 = ErrorHandler.safeQuerySelector('#panel1');
+			const panel2 = ErrorHandler.safeQuerySelector('#panel2');
 			const resizer = ErrorHandler.safeQuerySelector('#resizer');
 			
 			// 恢復過渡效果
-			if (pane1 && pane2) {
-				pane1.classList.remove('no-transition');
-				pane2.classList.remove('no-transition');
+			if (panel1 && panel2) {
+				panel1.classList.remove('no-transition');
+				panel2.classList.remove('no-transition');
 			}
 			
 			if (resizer) {

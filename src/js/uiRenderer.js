@@ -13,10 +13,10 @@ export class UIRenderer {
 			
 			container.innerHTML = `
 				<div id="panel-wrapper">
-					<div id="pane1" class="panel-container" data-panel="pane1">
+					<div id="panel1" class="panel-container" data-panel="panel1">
 						<div class="panel-header">
 							<div class="panel-title">
-								<button class="btn btn-light" type="button" data-bs-toggle="collapse" data-bs-target="#pane1-filter" aria-expanded="false">
+								<button class="btn btn-light" type="button" data-bs-toggle="collapse" data-bs-target="#panel1-filter" aria-expanded="false">
 									<i class="fas fa-filter me-1"></i>篩選
 								</button>
 							</div>
@@ -26,7 +26,7 @@ export class UIRenderer {
 								</button>
 							</div>
 						</div>
-						<div id="pane1-filter" class="collapse panel-filter">
+						<div id="panel1-filter" class="collapse panel-filter">
 							<div class="p-2 border-bottom bg-light">
 								<div class="row g-2 align-items-center">
 									<label class="col-auto form-label text-sm">站點</label>
@@ -60,14 +60,14 @@ export class UIRenderer {
 								</div>
 							</div>
 						</div>
-						<div class="panel-content" id="pane1-content"></div>
+						<div class="panel-content" id="panel1-content"></div>
 					</div>
 					
 					<div id="resizer" class="resizer" title="拖拽調整大小">
 						<div class="resizer-line"></div>
 					</div>
 					
-					<div id="pane2" class="panel-container" data-panel="pane2">
+					<div id="panel2" class="panel-container" data-panel="panel2">
 						<div class="panel-header">
 							<div class="panel-title">
 								<small class="me-2"><i class="fa-solid fa-star me-1"></i>主題選擇</small>
@@ -78,7 +78,7 @@ export class UIRenderer {
 									<option value="surround">環景</option>
 									<option value="PID">圖譜</option>
 								</select>
-								<button class="btn btn-light ms-2" type="button" data-bs-toggle="collapse" data-bs-target="#pane2-filter" aria-expanded="false">
+								<button class="btn btn-light ms-2" type="button" data-bs-toggle="collapse" data-bs-target="#panel2-filter" aria-expanded="false">
 									<i class="fas fa-filter me-1"></i>篩選
 								</button>
 							</div>
@@ -88,7 +88,7 @@ export class UIRenderer {
 								</button>
 							</div>
 						</div>
-						<div id="pane2-filter" class="collapse panel-filter">
+						<div id="panel2-filter" class="collapse panel-filter">
 							<div class="p-2 border-bottom bg-light">
 								<div class="row g-2 align-items-center">
 									<label class="col-auto form-label text-sm">站點</label>
@@ -122,7 +122,7 @@ export class UIRenderer {
 								</div>
 							</div>
 						</div>
-						<div class="panel-content" id="pane2-content"></div>
+						<div class="panel-content" id="panel2-content"></div>
 					</div>
 				</div>
 			`;
@@ -135,11 +135,11 @@ export class UIRenderer {
 	static updateButtons(state) {
 		return ErrorHandler.safeExecute(() => {
 			// 更新切換按鈕圖示和文字
-			const toggle1 = ErrorHandler.safeQuerySelector('[data-target="pane1"].toggle-btn');
-			const toggle2 = ErrorHandler.safeQuerySelector('[data-target="pane2"].toggle-btn');
+			const toggle1 = ErrorHandler.safeQuerySelector('[data-target="panel1"].toggle-btn');
+			const toggle2 = ErrorHandler.safeQuerySelector('[data-target="panel2"].toggle-btn');
 			
 			if (toggle1) {
-				if (state.pane1.visible) {
+				if (state.panel1.visible) {
 					toggle1.innerHTML = '<i class="fas fa-chevron-left me-1"></i>隱藏';
 				} else {
 					toggle1.innerHTML = '<i class="fas fa-chevron-right me-1"></i>顯示';
@@ -147,7 +147,7 @@ export class UIRenderer {
 			}
 			
 			if (toggle2) {
-				if (state.pane2.visible) {
+				if (state.panel2.visible) {
 					toggle2.innerHTML = '<i class="fas fa-chevron-right me-1"></i>隱藏';
 				} else {
 					toggle2.innerHTML = '<i class="fas fa-chevron-left me-1"></i>顯示';
@@ -155,11 +155,11 @@ export class UIRenderer {
 			}
 			
 			// 更新最大化按鈕圖示和文字
-			const max1 = ErrorHandler.safeQuerySelector('[data-target="pane1"].maximize-btn');
-			const max2 = ErrorHandler.safeQuerySelector('[data-target="pane2"].maximize-btn');
+			const max1 = ErrorHandler.safeQuerySelector('[data-target="panel1"].maximize-btn');
+			const max2 = ErrorHandler.safeQuerySelector('[data-target="panel2"].maximize-btn');
 			
 			if (max1) {
-				if (state.pane1.width >= CONFIG.MAXIMIZE_THRESHOLD) {
+				if (state.panel1.width >= CONFIG.MAXIMIZE_THRESHOLD) {
 					max1.innerHTML = '<i class="fas fa-window-restore me-1"></i>輔助面板';
 				} else {
 					max1.innerHTML = '<i class="fas fa-expand me-1"></i>最大化';
@@ -167,7 +167,7 @@ export class UIRenderer {
 			}
 			
 			if (max2) {
-				if (state.pane2.width >= CONFIG.MAXIMIZE_THRESHOLD) {
+				if (state.panel2.width >= CONFIG.MAXIMIZE_THRESHOLD) {
 					max2.innerHTML = '<i class="fas fa-window-restore me-1"></i>輔助面板';
 				} else {
 					max2.innerHTML = '<i class="fas fa-expand me-1"></i>最大化';
@@ -184,7 +184,7 @@ export class UIRenderer {
 			const auxiliaryBtn = ErrorHandler.safeQuerySelector('.auxiliary-btn');
 			
 			if (auxiliaryBtn) {
-				if (state.pane2.visible) {
+				if (state.panel2.visible) {
 					auxiliaryBtn.style.display = 'none';
 				} else {
 					auxiliaryBtn.style.display = 'inline-block';
@@ -200,32 +200,32 @@ export class UIRenderer {
 	// 應用視覺狀態
 	static applyVisualState(state) {
 		return ErrorHandler.safeExecute(() => {
-			const pane1 = ErrorHandler.safeQuerySelector('#pane1');
-			const pane2 = ErrorHandler.safeQuerySelector('#pane2');
+			const panel1 = ErrorHandler.safeQuerySelector('#panel1');
+			const panel2 = ErrorHandler.safeQuerySelector('#panel2');
 			const resizer = ErrorHandler.safeQuerySelector('#resizer');
 
-			if (!pane1 || !pane2 || !resizer) {
+			if (!panel1 || !panel2 || !resizer) {
 				console.warn('Required elements not available for state application');
 				return false;
 			}
 			
 			// 應用面板寬度和可見性
-			if (state.pane1.visible) {
-				pane1.style.width = state.pane1.width + '%';
-				pane1.classList.remove('panel-hidden');
+			if (state.panel1.visible) {
+				panel1.style.width = state.panel1.width + '%';
+				panel1.classList.remove('panel-hidden');
 			} else {
-				pane1.classList.add('panel-hidden');
+				panel1.classList.add('panel-hidden');
 			}
 			
-			if (state.pane2.visible) {
-				pane2.style.width = state.pane2.width + '%';
-				pane2.classList.remove('panel-hidden');
+			if (state.panel2.visible) {
+				panel2.style.width = state.panel2.width + '%';
+				panel2.classList.remove('panel-hidden');
 			} else {
-				pane2.classList.add('panel-hidden');
+				panel2.classList.add('panel-hidden');
 			}
 			
 			// 控制分隔線的顯示
-			if (!state.pane1.visible || !state.pane2.visible) {
+			if (!state.panel1.visible || !state.panel2.visible) {
 				resizer.classList.add('resizer-hidden');
 			} else {
 				resizer.classList.remove('resizer-hidden');
