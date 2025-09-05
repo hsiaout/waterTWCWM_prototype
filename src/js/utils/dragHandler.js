@@ -1,0 +1,113 @@
+import { ErrorHandler } from './errorHandler.js';
+import { CONFIG } from '../config.js';
+
+// 拖拽處理器
+export class DragHandler {
+	constructor(layoutManager) {
+		this.layoutManager = layoutManager;
+		this.isDragging = false;
+	}
+
+	// 綁定拖拽事件
+	bindDragEvents() {
+		return ErrorHandler.safeExecute(() => {
+			const resizer = ErrorHandler.safeQuerySelector('#resizer');
+			if (!resizer) {
+				console.error('Resizer element not found, cannot bind drag events');
+				return false;
+			}
+			
+			// 滑鼠事件
+			resizer.addEventListener('mousedown', this.startDrag.bind(this));
+			document.addEventListener('mousemove', this.drag.bind(this));
+			document.addEventListener('mouseup', this.endDrag.bind(this));
+
+			// 觸摸事件 (移動端支援)
+			resizer.addEventListener('touchstart', this.startDrag.bind(this));
+			document.addEventListener('touchmove', this.drag.bind(this));
+			document.addEventListener('touchend', this.endDrag.bind(this));
+			
+			return true;
+		}, false, 'Drag events binding');
+	}
+
+	// 開始拖拽
+	startDrag(e) {
+		return ErrorHandler.safeExecute(() => {
+			e.preventDefault();
+			this.isDragging = true;
+			
+			const pane1 = ErrorHandler.safeQuerySelector('#pane1');
+			const pane2 = ErrorHandler.safeQuerySelector('#pane2');
+			const resizer = ErrorHandler.safeQuerySelector('#resizer');
+			
+			// 移除過渡效果
+			if (pane1 && pane2) {
+				pane1.classList.add('no-transition');
+				pane2.classList.add('no-transition');
+			}
+			
+			if (resizer) {
+				resizer.classList.add('dragging');
+			}
+			
+			document.body.style.cursor = 'col-resize';
+			document.body.style.userSelect = 'none';
+		}, null, 'Start drag operation');
+	}
+
+	// 拖拽中
+	drag(e) {
+		if (!this.isDragging) return;
+		
+		return ErrorHandler.safeExecute(() => {
+			e.preventDefault();
+			const panelWrapper = ErrorHandler.safeQuerySelector('#panel-wrapper');
+			if (!panelWrapper) return;
+
+			const clientX = e.clientX || (e.touches && e.touches[0].clientX);
+			const rect = panelWrapper.getBoundingClientRect();
+			const percentage = ((clientX - rect.left) / rect.width) * 100;
+			
+			// 限制範圍
+			const clampedPercentage = Math.max(CONFIG.MIN_WIDTH, Math.min(CONFIG.MAX_WIDTH, percentage));
+			
+			// 更新狀態
+			const newState = {
+				pane1: { ...this.layoutManager.stateManager.state.pane1, width: clampedPercentage },
+				pane2: { ...this.layoutManager.stateManager.state.pane2, width: 100 - clampedPercentage }
+			};
+			
+			this.layoutManager.stateManager.setState(newState);
+			this.layoutManager.applyState();
+		}, null, 'Drag operation');
+	}
+
+	// 結束拖拽
+	endDrag(e) {
+		if (!this.isDragging) return;
+		
+		return ErrorHandler.safeExecute(() => {
+			this.isDragging = false;
+			
+			const pane1 = ErrorHandler.safeQuerySelector('#pane1');
+			const pane2 = ErrorHandler.safeQuerySelector('#pane2');
+			const resizer = ErrorHandler.safeQuerySelector('#resizer');
+			
+			// 恢復過渡效果
+			if (pane1 && pane2) {
+				pane1.classList.remove('no-transition');
+				pane2.classList.remove('no-transition');
+			}
+			
+			if (resizer) {
+				resizer.classList.remove('dragging');
+			}
+			
+			document.body.style.cursor = '';
+			document.body.style.userSelect = '';
+			
+			this.layoutManager.stateManager.saveState();
+		}, null, 'End drag operation');
+	}
+}

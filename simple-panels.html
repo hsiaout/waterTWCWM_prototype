@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>簡單雙面板拖拽介面</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Font Awesome for icons -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    
+    <!-- 使用既有的 CSS 樣式 -->
+    <link rel="stylesheet" href="src/style/index.css">
+    <link rel="stylesheet" href="src/style/page.css">
+    
+    <style>
+        /* 簡化版的內嵌樣式，避免新增檔案 */
+        
+        #panel-wrapper {
+            display: flex;
+            width: 100%;
+            height: 100%;
+            gap: 0;
+            background: #e9ecef;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .demo-content {
+            padding: 20px;
+            height: 100%;
+            overflow: auto;
+        }
+        
+        .demo-content h3 {
+            color: #495057;
+            margin-bottom: 15px;
+        }
+        
+        .demo-content p {
+            line-height: 1.6;
+            color: #6c757d;
+        }
+        
+        .status-info {
+            background: #e3f2fd;
+            border: 1px solid #bbdefb;
+            border-radius: 4px;
+            padding: 10px;
+            margin-top: 15px;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+	<!-- 頂部導航 -->
+	<div class="top-nav py-2">
+		<div class="container">
+			<div class="row justify-content-between align-items-center">
+				<div class="col-auto">
+					<span>台北自來水事業處</span>
+				</div>
+				<div class="col-auto">
+					<div class="d-flex gap-3">
+						<a href="#" class="text-decoration-none">系統說明</a>
+						<a href="#" class="text-decoration-none">操作手冊</a>
+						<a href="#" class="text-decoration-none">聯絡我們</a>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	
+	<!-- 主導航 -->
+	<header class="main-header">
+		<div class="row justify-content-between align-items-center h-100 px-3">
+			<div class="col-auto">
+				<div class="dropdown">
+					<button class="btn btn-light border dropdown-toggle" type="button" data-bs-toggle="dropdown"
+						aria-expanded="false" style="border: 2px solid var(--primary-color)!important"><i
+							class="fa-solid fa-table me-1"></i>主題選擇</button>
+					<ul class="dropdown-menu">
+						<li><a class="dropdown-item" href="#">
+								<div class="badge bg-primary me-1">列表</div>供水
+							</a></li>
+						<li><a class="dropdown-item" href="#">
+								<div class="badge bg-primary me-1">列表</div>淨水
+							</a></li>
+						<li><a class="dropdown-item" href="#">
+								<div class="badge bg-primary me-1">列表</div>水質
+							</a></li>
+						<li><a class="dropdown-item" href="#">
+								<div class="badge bg-primary me-1">列表</div>分區計量
+							</a></li>
+						<li><a class="dropdown-item" href="#">
+								<div class="badge bg-primary me-1">列表</div>大表計量
+							</a></li>
+						<li>
+							<hr class="dropdown-divider">
+						</li>
+						<li><a class="dropdown-item" href="#">地圖</a></li>
+						<li><a class="dropdown-item" href="#">圖譜</a></li>
+						<li><a class="dropdown-item" href="#">環景</a></li>
+						<li>
+							<hr class="dropdown-divider">
+						</li>
+						<li><a class="dropdown-item" href="#">緊急應變圖台</a></li>
+					</ul>
+				</div>
+			</div>
+			<div class="col-auto">
+				<div class="d-flex align-items-center">
+					<div class="logo me-2">💧</div>
+					<div class="site-name">水網監測平台</div>
+				</div>
+			</div>
+			<div class="col-auto" style="visibility: hidden;">
+				<button class="btn btn-light border dropdown-toggle" type="button" data-bs-toggle="dropdown"
+					aria-expanded="false" style="border: 2px solid var(--primary-color)!important"><i
+						class="fa-solid fa-table me-1"></i>主題選擇</button>
+			</div>
+		</div>
+	</header>
+	<div class="main-content">
+		<div id="panel-wrapper">
+			<!-- Panel 1 -->
+			<div id="pane1" class="panel-container" style="width: 50%;">
+				<div class="panel-header">
+					<div class="panel-title">
+						<strong>Panel 1</strong>
+					</div>
+					<div class="panel-controls">
+						<button class="btn btn-outline-danger btn-sm" onclick="closePanel1()" title="關閉 Panel 1">
+							<i class="fas fa-times"></i>
+						</button>
+					</div>
+				</div>
+				<div class="panel-content">
+					<div class="demo-content">
+						<h3>左側面板</h3>
+						<p>這是左側面板的內容區域。您可以在這裡放置任何內容。</p>
+						<p>嘗試拖拽中間的分隔線來調整面板大小！</p>
+						
+						<div class="status-info">
+							<strong>面板資訊：</strong><br>
+							寬度: <span id="panel1-width">50%</span><br>
+							狀態: 顯示中
+						</div>
+						
+						<hr>
+						<h4>功能特色</h4>
+						<ul>
+							<li>響應式拖拽調整</li>
+							<li>最小/最大寬度限制</li>
+							<li>狀態自動保存</li>
+							<li>流暢的動畫效果</li>
+						</ul>
+					</div>
+				</div>
+			</div>
+			
+			<!-- Resizer -->
+			<div id="resizer" class="resizer">
+				<div class="resizer-line"></div>
+			</div>
+			
+			<!-- Panel 2 -->
+			<div id="pane2" class="panel-container" style="width: 50%;">
+				<div class="panel-header">
+					<div class="panel-title">
+						<strong>Panel 2</strong>
+					</div>
+					<div class="panel-controls">
+						<button class="btn btn-outline-danger btn-sm" onclick="closePanel2()" title="關閉 Panel 2">
+							<i class="fas fa-times"></i>
+						</button>
+					</div>
+				</div>
+				<div class="panel-content">
+					<div class="demo-content">
+						<h3>右側面板</h3>
+						<p>這是右側面板的內容區域。面板可以包含任何類型的內容。</p>
+						
+						<div class="status-info">
+							<strong>面板資訊：</strong><br>
+							寬度: <span id="panel2-width">50%</span><br>
+							狀態: 顯示中
+						</div>
+						
+						<hr>
+						<h4>操作說明</h4>
+						<ol>
+							<li>將滑鼠移到中間的分隔線上</li>
+							<li>按住滑鼠左鍵並拖拽</li>
+							<li>釋放滑鼠即可完成調整</li>
+						</ol>
+						
+						<div class="mt-3">
+							<button class="btn btn-primary btn-sm" onclick="resetPanels()">重置 50:50</button>
+							<button class="btn btn-outline-secondary btn-sm" onclick="showCurrentState()">顯示狀態</button>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+		
+	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+	<script src="https://cdn.datatables.net/2.3.3/js/dataTables.min.js"></script>
+	<script src="https://cdn.datatables.net/2.3.3/js/dataTables.bootstrap5.min.js"></script>
+	<script src="https://cdn.datatables.net/fixedcolumns/5.0.4/js/dataTables.fixedColumns.min.js"></script>
+	<script src="https://cdn.datatables.net/fixedcolumns/5.0.4/js/fixedColumns.bootstrap5.min.js"></script>
+	<link rel="stylesheet" href="https://cdn.datatables.net/2.3.3/css/dataTables.bootstrap5.min.css">
+	<link rel="stylesheet" href="https://cdn.datatables.net/fixedcolumns/5.0.4/css/fixedColumns.bootstrap5.min.css">
+	<script type="module" src="src/js/layout-modular.js"></script>
+    <script type="module">
+        // 直接使用既有的 LayoutManager - 完全不寫新程式碼
+        import { LayoutManager } from './src/js/LayoutManager.js';
+        
+        // 全域變數
+        let layoutManager;
+        
+        // 直接使用 LayoutManager 的方法
+        window.resetPanels = function() {
+            if (layoutManager) {
+                layoutManager.resetLayout();
+            }
+        };
+        
+        window.closePanel1 = function() {
+            if (layoutManager) {
+                layoutManager.togglePanel('pane1');
+            }
+        };
+        
+        window.closePanel2 = function() {
+            if (layoutManager) {
+                layoutManager.togglePanel('pane2');
+            }
+        };
+        
+        window.showCurrentState = function() {
+            if (layoutManager) {
+                const state = layoutManager.getState();
+                alert(`目前狀態:\nPanel 1: ${state.pane1.width.toFixed(1)}%\nPanel 2: ${state.pane2.width.toFixed(1)}%`);
+            }
+        };
+        
+        // 自定義的面板寬度顯示更新函數
+        function updateWidthDisplay() {
+            if (layoutManager) {
+                const state = layoutManager.getState();
+                const panel1WidthSpan = document.getElementById('panel1-width');
+                const panel2WidthSpan = document.getElementById('panel2-width');
+                
+                if (panel1WidthSpan) panel1WidthSpan.textContent = state.pane1.width.toFixed(1) + '%';
+                if (panel2WidthSpan) panel2WidthSpan.textContent = state.pane2.width.toFixed(1) + '%';
+            }
+        }
+        
+        // 頁面載入完成後初始化
+        document.addEventListener('DOMContentLoaded', async function() {
+            layoutManager = new LayoutManager();
+            
+            // 跳過 createLayout，因為 HTML 中已經有佈局結構
+            // await layoutManager.init();  
+            
+            // 手動初始化必要的部分
+            await layoutManager.contentLoader.loadPanelContents();
+            layoutManager.eventHandler.bindEvents();
+            layoutManager.dragHandler.bindDragEvents();
+            layoutManager.applyState();
+            layoutManager.updateAuxiliaryButton();
+            
+            // 初始更新寬度顯示
+            updateWidthDisplay();
+            
+            // 監聽狀態變化來更新顯示
+            const originalSetState = layoutManager.setState.bind(layoutManager);
+            layoutManager.setState = function(newState) {
+                const result = originalSetState(newState);
+                updateWidthDisplay();
+                return result;
+            };
+            
+            console.log('簡單雙面板拖拽介面已初始化 (直接使用 LayoutManager.js)');
+        });
+    </script>
+</body>
+</html>

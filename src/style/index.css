@@ -1,0 +1,236 @@
+@charset "UTF-8";
+:root {
+  --primary-color: #4a90e2;
+  --primary-dark: #357abd;
+  --secondary-color: #6c757d;
+  --success-color: #52c41a;
+  --warning-color: #fa8c16;
+  --light-bg: #f5f7fa;
+  --card-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  --card-shadow-hover: 0 8px 25px rgba(0, 0, 0, 0.15);
+  --nav-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
+}
+
+body {
+  font-family: "Microsoft JhengHei", "PingFang SC", "Hiragino Sans GB", Arial, sans-serif;
+  background-color: var(--light-bg);
+  font-size: 110%;
+}
+
+/* Bootstrap 覆蓋 */
+.btn-primary {
+  background-color: var(--primary-color);
+  border-color: var(--primary-color);
+}
+.btn-primary:hover {
+  background-color: var(--primary-dark);
+  border-color: var(--primary-dark);
+}
+
+.text-primary {
+  color: var(--primary-color) !important;
+}
+
+.bg-primary {
+  background-color: var(--primary-color) !important;
+}
+
+/* 導航區域 */
+.top-nav {
+  position: relative;
+  background: white;
+  border-bottom: 1px solid #e8ecf0;
+  font-size: 0.75rem;
+  z-index: 2;
+}
+.top-nav a {
+  color: #666;
+  text-decoration: none;
+}
+.top-nav a:hover {
+  color: var(--primary-color);
+}
+
+.main-header {
+  position: relative;
+  background: white;
+  box-shadow: var(--nav-shadow);
+  height: 50px;
+  z-index: 1;
+}
+.main-header .logo {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: var(--primary-color);
+}
+.main-header .site-name {
+  font-size: 1.25rem;
+  color: #272727;
+  font-weight: bold;
+}
+
+/* Hero 區域 */
+.hero-section {
+  background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+  color: white;
+  padding: 2.5rem 0;
+}
+.hero-section .hero-icon {
+  font-size: 3rem;
+  opacity: 0.9;
+}
+.hero-section .hero-title {
+  font-size: 1.75rem;
+  font-weight: 600;
+}
+.hero-section .hero-subtitle {
+  opacity: 0.9;
+}
+.hero-section .stat-item {
+  text-align: center;
+}
+.hero-section .stat-item .stat-number {
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+.hero-section .stat-item .stat-label {
+  font-size: 0.75rem;
+  opacity: 0.8;
+}
+
+/* 區段標題 */
+.section-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #333;
+  padding-left: 1rem;
+  border-left: 4px solid var(--primary-color);
+}
+
+/* 服務卡片 */
+.service-card {
+  background: white;
+  border-radius: 0.75rem;
+  padding: 1rem 1rem;
+  text-align: center;
+  box-shadow: var(--card-shadow);
+  transition: all 0.3s ease;
+  cursor: pointer;
+  border: 1px solid #f0f0f0;
+  height: 100%;
+}
+.service-card:hover {
+  transform: translateY(-5px);
+  box-shadow: var(--card-shadow-hover);
+  border-color: var(--primary-color);
+}
+.service-card .service-icon {
+  font-size: 2rem;
+  color: var(--primary-color);
+}
+.service-card .service-name {
+  font-size: 1rem;
+  color: #333;
+  font-weight: bold;
+}
+
+/* 功能按鈕 */
+.action-btn {
+  background: white;
+  border: 1px solid #e0e6ed;
+  border-radius: 0.5rem;
+  padding: 1.25rem;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-decoration: none;
+  color: #333;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+.action-btn:hover {
+  border-color: var(--primary-color);
+  box-shadow: 0 4px 12px rgba(74, 144, 226, 0.15);
+  transform: translateY(-2px);
+  text-decoration: none;
+  color: #333;
+}
+.action-btn.btn-success {
+  background: var(--success-color);
+  color: white;
+  border-color: var(--success-color);
+}
+.action-btn.btn-success:hover {
+  color: white;
+}
+.action-btn.btn-primary {
+  background: var(--primary-color);
+  color: white;
+  border-color: var(--primary-color);
+}
+.action-btn.btn-primary:hover {
+  color: white;
+}
+.action-btn.btn-warning {
+  background: var(--warning-color);
+  color: white;
+  border-color: var(--warning-color);
+}
+.action-btn.btn-warning:hover {
+  color: white;
+}
+.action-btn i {
+  font-size: 1.25rem;
+  margin-bottom: 0.5rem;
+}
+
+/* 搜尋區域 */
+.search-wrapper {
+  position: relative;
+}
+.search-wrapper .search-btn {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: var(--primary-color);
+  color: white;
+  border: none;
+  padding: 4px 8px;
+  border-radius: 3px;
+  cursor: pointer;
+}
+
+/* 動畫效果 */
+.fade-in {
+  animation: fadeIn 0.6s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+/* 響應式設計 */
+@media (max-width: 768px) {
+  .hero-section .hero-title {
+    font-size: 1.375rem;
+  }
+  .service-card {
+    padding: 1.25rem 0.75rem;
+  }
+  .service-card .service-icon {
+    font-size: 1.5rem;
+  }
+  .service-card .service-name {
+    font-size: 1rem;
+  }
+}/*# sourceMappingURL=index.css.map */

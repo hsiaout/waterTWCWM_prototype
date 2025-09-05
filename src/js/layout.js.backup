@@ -1,0 +1,923 @@
+// 配置常量
+const CONFIG = {
+	// 面板尺寸配置
+	MIN_WIDTH: 10,
+	MAX_WIDTH: 90,
+	DEFAULT_WIDTH: 50,
+	MAXIMIZE_THRESHOLD: 95,
+	
+	// 動畫和延遲配置
+	TRANSITION_DELAY: 10,
+	CONTENT_LOAD_DELAY: 100,
+	
+	// 存儲配置
+	STORAGE_KEY: 'panelLayoutState',
+	
+	// 主題映射配置
+	CONTENT_MAP: {
+		'PID': { html: '../src/page/PID.html', js: '' },
+		'list': { html: '../src/page/list2.html', js: '../src/page/list2.js' },
+		'map': { html: '../src/page/map.html', js: '' },
+		'surround': { html: '../src/page/surround.html', js: '' }
+	},
+	
+	// 預設狀態配置
+	DEFAULT_STATE: {
+		pane1: { width: 50, visible: true },
+		pane2: { width: 50, visible: true }
+	}
+};
+
+// 錯誤處理工具類
+class ErrorHandler {
+	static safeQuerySelector(selector, context = document) {
+		try {
+			const element = context.querySelector(selector);
+			if (!element) {
+				console.warn(`Element not found: ${selector}`);
+			}
+			return element;
+		} catch (error) {
+			console.error(`Query selector error for "${selector}":`, error);
+			return null;
+		}
+	}
+
+	static safeQuerySelectorAll(selector, context = document) {
+		try {
+			return context.querySelectorAll(selector);
+		} catch (error) {
+			console.error(`Query selector all error for "${selector}":`, error);
+			return [];
+		}
+	}
+
+	static safeExecute(fn, fallback = null, context = 'Unknown operation') {
+		try {
+			return fn();
+		} catch (error) {
+			console.error(`Error in ${context}:`, error);
+			return fallback;
+		}
+	}
+
+	static async safeFetch(url, options = {}) {
+		try {
+			const response = await fetch(url, options);
+			if (!response.ok) {
+				throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+			}
+			return response;
+		} catch (error) {
+			console.error(`Fetch error for ${url}:`, error);
+			throw error;
+		}
+	}
+
+	static getErrorTemplate(message) {
+		return `<div class="p-3 text-muted d-flex align-items-center">
+			<i class="fas fa-exclamation-triangle me-2 text-warning"></i>
+			載入失敗: ${message}
+		</div>`;
+	}
+}
+
+// 面板配置
+const panels = [
+	{
+		id: "pane1",
+		html: "../src/page/list.html",
+		js: "../src/page/list.js",
+	},
+	{
+		id: "pane2",
+		html: "../src/page/map.html",
+		js: "",
+	},
+];
+
+// 佈局管理器
+class LayoutManager {
+	constructor() {
+		this.state = { ...CONFIG.DEFAULT_STATE };
+		this.isDragging = false;
+		this.minWidth = CONFIG.MIN_WIDTH;
+		this.maxWidth = CONFIG.MAX_WIDTH;
+		
+		// DOM 元素緩存
+		this.elements = {
+			container: null,
+			panelWrapper: null,
+			pane1: null,
+			pane2: null,
+			resizer: null,
+			pane1Content: null,
+			pane2Content: null,
+			pane1Filter: null,
+			pane2Filter: null,
+			auxiliaryBtn: null,
+			themeSelector: null
+		};
+		
+		// 從 localStorage 載入狀態
+		this.loadState();
+	}
+
+	// 初始化佈局
+	init() {
+		this.createLayout();
+		this.cacheElements();
+		this.bindEvents();
+		this.loadPanelContents();
+		this.applyState();
+		this.updateAuxiliaryButton();
+	}
+
+	// 緩存 DOM 元素
+	cacheElements() {
+		return ErrorHandler.safeExecute(() => {
+			this.elements.container = ErrorHandler.safeQuerySelector('#main-layout-container');
+			this.elements.panelWrapper = ErrorHandler.safeQuerySelector('#panel-wrapper');
+			this.elements.pane1 = ErrorHandler.safeQuerySelector('#pane1');
+			this.elements.pane2 = ErrorHandler.safeQuerySelector('#pane2');
+			this.elements.resizer = ErrorHandler.safeQuerySelector('#resizer');
+			this.elements.pane1Content = ErrorHandler.safeQuerySelector('#pane1-content');
+			this.elements.pane2Content = ErrorHandler.safeQuerySelector('#pane2-content');
+			this.elements.pane1Filter = ErrorHandler.safeQuerySelector('#pane1-filter');
+			this.elements.pane2Filter = ErrorHandler.safeQuerySelector('#pane2-filter');
+			this.elements.auxiliaryBtn = ErrorHandler.safeQuerySelector('.auxiliary-btn');
+			this.elements.themeSelector = ErrorHandler.safeQuerySelector('#theme-selector');
+			
+			// 驗證關鍵元素是否存在
+			const requiredElements = ['container', 'pane1', 'pane2', 'resizer'];
+			const missingElements = requiredElements.filter(key => !this.elements[key]);
+			
+			if (missingElements.length > 0) {
+				console.error('Missing required elements:', missingElements);
+				return false;
+			}
+			
+			return true;
+		}, false, 'DOM elements caching');
+	}
+
+	// 創建佈局結構
+	createLayout() {
+		return ErrorHandler.safeExecute(() => {
+			const container = ErrorHandler.safeQuerySelector('#main-layout-container');
+			if (!container) {
+				throw new Error('Main layout container not found');
+			}
+			
+			container.innerHTML = `
+				<div id="panel-wrapper" class="d-flex w-100 h-100">
+					<div id="pane1" class="panel-container" data-panel="pane1">
+						<div class="panel-header">
+							<div class="panel-title">
+								<button class="btn btn-light btn-sm" type="button" data-bs-toggle="collapse" data-bs-target="#pane1-filter" aria-expanded="false">
+									<i class="fas fa-filter me-1"></i>篩選
+								</button>
+							</div>
+							<div class="panel-controls">
+								<button class="btn btn-light btn-sm ms-2 auxiliary-btn" type="button" title="開啟輔助面板" style="display: none;">
+									<i class="fas fa-window-restore me-1"></i>輔助面板
+								</button>
+							</div>
+						</div>
+						<div id="pane1-filter" class="collapse panel-filter">
+							<div class="p-2 border-bottom bg-light">
+								<div class="row g-2 align-items-center">
+									<label class="col-auto form-label text-sm">站點</label>
+									<div class="col-auto">
+										<select class="form-select form-select-sm" id="station-filter">
+											<option value="">所有站點</option>
+											<option value="北區">北區</option>
+											<option value="南區">南區</option>
+											<option value="東區">東區</option>
+											<option value="西區">西區</option>
+										</select>
+									</div>
+									<label class="col-auto form-label text-sm">時間範圍</label>
+									<div class="col-auto">
+										<select class="form-select form-select-sm" id="time-filter">
+											<option value="">所有時間</option>
+											<option value="today">今天</option>
+											<option value="week">本週</option>
+											<option value="month">本月</option>
+										</select>
+									</div>
+									<label class="col-auto form-label text-sm">狀態</label>
+									<div class="col-auto">
+										<select class="form-select form-select-sm" id="status-filter">
+											<option value="">所有狀態</option>
+											<option value="normal">正常</option>
+											<option value="warning">警告</option>
+											<option value="error">錯誤</option>
+										</select>
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class="panel-content" id="pane1-content"></div>
+					</div>
+					
+					<div id="resizer" class="resizer" title="拖拽調整大小">
+						<div class="resizer-line"></div>
+					</div>
+					
+					<div id="pane2" class="panel-container" data-panel="pane2">
+						<div class="panel-header">
+							<div class="panel-title">
+								<small class="me-2"><i class="fa-solid fa-star me-1"></i>主題選擇</small>
+								<select class="form-select form-select-sm theme-selector" id="theme-selector" style="width: auto;">
+									<option value="">主題選擇</option>
+									<option value="list">列表</option>
+									<option value="map">地圖</option>
+									<option value="surround">環景</option>
+									<option value="PID">圖譜</option>
+								</select>
+								<button class="btn btn-light btn-sm ms-2" type="button" data-bs-toggle="collapse" data-bs-target="#pane2-filter" aria-expanded="false">
+									<i class="fas fa-filter me-1"></i>篩選
+								</button>
+							</div>
+							<div class="panel-controls">
+								<button class="btn btn-sm btn-light hide-panel2-btn" type="button" title="隱藏輔助面板">
+									<i class="fas fa-chevron-right me-1"></i>隱藏
+								</button>
+							</div>
+						</div>
+						<div id="pane2-filter" class="collapse panel-filter">
+							<div class="p-2 border-bottom bg-light">
+								<div class="row g-2 align-items-center">
+									<label class="col-auto form-label text-sm">站點</label>
+									<div class="col-auto">
+										<select class="form-select form-select-sm" id="station-filter-2">
+											<option value="">所有站點</option>
+											<option value="北區">北區</option>
+											<option value="南區">南區</option>
+											<option value="東區">東區</option>
+											<option value="西區">西區</option>
+										</select>
+									</div>
+									<label class="col-auto form-label text-sm">時間範圍</label>
+									<div class="col-auto">
+										<select class="form-select form-select-sm" id="time-filter-2">
+											<option value="">所有時間</option>
+											<option value="today">今天</option>
+											<option value="week">本週</option>
+											<option value="month">本月</option>
+										</select>
+									</div>
+									<label class="col-auto form-label text-sm">狀態</label>
+									<div class="col-auto">
+										<select class="form-select form-select-sm" id="status-filter-2">
+											<option value="">所有狀態</option>
+											<option value="normal">正常</option>
+											<option value="warning">警告</option>
+											<option value="error">錯誤</option>
+										</select>
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class="panel-content" id="pane2-content"></div>
+					</div>
+				</div>
+			`;
+			
+			return true;
+		}, false, 'Layout creation');
+	}
+
+	// 綁定事件
+	bindEvents() {
+		return ErrorHandler.safeExecute(() => {
+			if (!this.elements.resizer) {
+				console.error('Resizer element not found, cannot bind drag events');
+				return false;
+			}
+			
+			// 拖拽事件
+			this.elements.resizer.addEventListener('mousedown', this.startDrag.bind(this));
+			document.addEventListener('mousemove', this.drag.bind(this));
+			document.addEventListener('mouseup', this.endDrag.bind(this));
+
+			// 觸摸事件 (移動端支援)
+			this.elements.resizer.addEventListener('touchstart', this.startDrag.bind(this));
+			document.addEventListener('touchmove', this.drag.bind(this));
+			document.addEventListener('touchend', this.endDrag.bind(this));
+
+			// 面板控制按鈕事件
+			document.addEventListener('click', (e) => {
+				if (e.target.closest('.toggle-btn')) {
+					const target = e.target.closest('.toggle-btn').dataset.target;
+					this.togglePanel(target);
+				}
+				
+				if (e.target.closest('.maximize-btn')) {
+					const target = e.target.closest('.maximize-btn').dataset.target;
+					this.maximizePanel(target);
+				}
+				
+				// 輔助面板按鈕事件
+				if (e.target.closest('.auxiliary-btn')) {
+					this.showPanel2();
+				}
+				
+				// panel2 隱藏按鈕事件
+				if (e.target.closest('.hide-panel2-btn')) {
+					this.hidePanel2();
+				}
+			});
+
+			// 篩選事件
+			document.addEventListener('change', (e) => {
+				if (e.target.id.includes('filter')) {
+					this.applyFilters();
+				}
+				
+				// 主題選擇器事件
+				if (e.target.classList.contains('theme-selector')) {
+					const contentType = e.target.value;
+					if (contentType) {
+						const panelId = e.target.closest('.panel-container').id;
+						this.switchContent(panelId, contentType);
+					}
+				}
+			});
+
+			// 鍵盤快捷鍵
+			document.addEventListener('keydown', (e) => {
+				if (e.ctrlKey) {
+					switch(e.key) {
+						case '1':
+							e.preventDefault();
+							// 切換輔助面板顯示/隱藏
+							if (this.state.pane2.visible) {
+								this.hidePanel2();
+							} else {
+								this.showPanel2();
+							}
+							break;
+						case '2':
+							e.preventDefault();
+							this.hidePanel2();
+							break;
+						case '0':
+							e.preventDefault();
+							this.showPanel2();
+							break;
+					}
+				}
+			});
+
+			// 視窗大小變化事件
+			window.addEventListener('resize', this.handleResize.bind(this));
+			
+			return true;
+		}, false, 'Event binding');
+	}
+
+	// 開始拖拽
+	startDrag(e) {
+		return ErrorHandler.safeExecute(() => {
+			e.preventDefault();
+			this.isDragging = true;
+			
+			// 移除過渡效果
+			if (this.elements.pane1 && this.elements.pane2) {
+				this.elements.pane1.classList.add('no-transition');
+				this.elements.pane2.classList.add('no-transition');
+			}
+			
+			if (this.elements.resizer) {
+				this.elements.resizer.classList.add('dragging');
+			}
+			
+			document.body.style.cursor = 'col-resize';
+			document.body.style.userSelect = 'none';
+		}, null, 'Start drag operation');
+	}
+
+	// 拖拽中
+	drag(e) {
+		if (!this.isDragging || !this.elements.panelWrapper) return;
+		
+		return ErrorHandler.safeExecute(() => {
+			e.preventDefault();
+			const clientX = e.clientX || (e.touches && e.touches[0].clientX);
+			const rect = this.elements.panelWrapper.getBoundingClientRect();
+			const percentage = ((clientX - rect.left) / rect.width) * 100;
+			
+			// 限制範圍
+			const clampedPercentage = Math.max(this.minWidth, Math.min(this.maxWidth, percentage));
+			
+			this.state.pane1.width = clampedPercentage;
+			this.state.pane2.width = 100 - clampedPercentage;
+			
+			this.applyState();
+		}, null, 'Drag operation');
+	}
+
+	// 結束拖拽
+	endDrag(e) {
+		if (!this.isDragging) return;
+		
+		return ErrorHandler.safeExecute(() => {
+			this.isDragging = false;
+			
+			// 恢復過渡效果
+			if (this.elements.pane1 && this.elements.pane2) {
+				this.elements.pane1.classList.remove('no-transition');
+				this.elements.pane2.classList.remove('no-transition');
+			}
+			
+			if (this.elements.resizer) {
+				this.elements.resizer.classList.remove('dragging');
+			}
+			
+			document.body.style.cursor = '';
+			document.body.style.userSelect = '';
+			
+			this.saveState();
+		}, null, 'End drag operation');
+	}
+
+	// 切換面板顯示/隱藏
+	togglePanel(panelId) {
+		const otherPanelId = panelId === 'pane1' ? 'pane2' : 'pane1';
+		
+		if (this.state[panelId].visible) {
+			// 隱藏面板
+			this.state[panelId].visible = false;
+			this.state[otherPanelId].visible = true;
+			this.state[otherPanelId].width = 100;
+		} else {
+			// 顯示面板
+			this.state[panelId].visible = true;
+			this.state[panelId].width = 50;
+			this.state[otherPanelId].width = 50;
+		}
+		
+		this.applyState();
+		this.saveState();
+		this.updateButtons();
+	}
+
+	// 最大化面板
+	maximizePanel(panelId) {
+		return ErrorHandler.safeExecute(() => {
+			const otherPanelId = panelId === 'pane1' ? 'pane2' : 'pane1';
+			
+			// 如果已經最大化，則恢復
+			if (this.state[panelId].width >= CONFIG.MAXIMIZE_THRESHOLD) {
+				this.resetLayout();
+			} else {
+				// 最大化
+				this.state[panelId].visible = true;
+				this.state[panelId].width = 100;
+				this.state[otherPanelId].visible = false;
+				this.state[otherPanelId].width = 0;
+			}
+			
+			this.applyState();
+			this.saveState();
+			this.updateButtons();
+		}, null, 'Maximize panel operation');
+	}
+
+	// 重置佈局
+	resetLayout() {
+		return ErrorHandler.safeExecute(() => {
+			this.state = { ...CONFIG.DEFAULT_STATE };
+			
+			this.applyState();
+			this.saveState();
+			this.updateButtons();
+		}, null, 'Reset layout operation');
+	}
+
+	// 應用狀態
+	applyState() {
+		return ErrorHandler.safeExecute(() => {
+			if (!this.elements.pane1 || !this.elements.pane2 || !this.elements.resizer) {
+				console.warn('Required elements not available for state application');
+				return false;
+			}
+			
+			// 應用面板寬度和可見性
+			if (this.state.pane1.visible) {
+				this.elements.pane1.style.width = this.state.pane1.width + '%';
+				this.elements.pane1.classList.remove('panel-hidden');
+			} else {
+				this.elements.pane1.classList.add('panel-hidden');
+			}
+			
+			if (this.state.pane2.visible) {
+				this.elements.pane2.style.width = this.state.pane2.width + '%';
+				this.elements.pane2.classList.remove('panel-hidden');
+			} else {
+				this.elements.pane2.classList.add('panel-hidden');
+			}
+			
+			// 控制分隔線的顯示
+			if (!this.state.pane1.visible || !this.state.pane2.visible) {
+				this.elements.resizer.classList.add('resizer-hidden');
+			} else {
+				this.elements.resizer.classList.remove('resizer-hidden');
+			}
+			
+			return true;
+		}, false, 'Apply state operation');
+	}
+
+	// 更新按鈕狀態
+	updateButtons() {
+		return ErrorHandler.safeExecute(() => {
+			// 更新切換按鈕圖示和文字
+			const toggle1 = ErrorHandler.safeQuerySelector('[data-target="pane1"].toggle-btn');
+			const toggle2 = ErrorHandler.safeQuerySelector('[data-target="pane2"].toggle-btn');
+			
+			if (toggle1) {
+				if (this.state.pane1.visible) {
+					toggle1.innerHTML = '<i class="fas fa-chevron-left me-1"></i>隱藏';
+				} else {
+					toggle1.innerHTML = '<i class="fas fa-chevron-right me-1"></i>顯示';
+				}
+			}
+			
+			if (toggle2) {
+				if (this.state.pane2.visible) {
+					toggle2.innerHTML = '<i class="fas fa-chevron-right me-1"></i>隱藏';
+				} else {
+					toggle2.innerHTML = '<i class="fas fa-chevron-left me-1"></i>顯示';
+				}
+			}
+			
+			// 更新最大化按鈕圖示和文字
+			const max1 = ErrorHandler.safeQuerySelector('[data-target="pane1"].maximize-btn');
+			const max2 = ErrorHandler.safeQuerySelector('[data-target="pane2"].maximize-btn');
+			
+			if (max1) {
+				if (this.state.pane1.width >= CONFIG.MAXIMIZE_THRESHOLD) {
+					max1.innerHTML = '<i class="fas fa-window-restore me-1"></i>輔助面板';
+				} else {
+					max1.innerHTML = '<i class="fas fa-expand me-1"></i>最大化';
+				}
+			}
+			
+			if (max2) {
+				if (this.state.pane2.width >= CONFIG.MAXIMIZE_THRESHOLD) {
+					max2.innerHTML = '<i class="fas fa-window-restore me-1"></i>輔助面板';
+				} else {
+					max2.innerHTML = '<i class="fas fa-expand me-1"></i>最大化';
+				}
+			}
+			
+			return true;
+		}, false, 'Update buttons operation');
+	}
+
+	// 處理視窗大小變化
+	handleResize() {
+		this.applyState();
+	}
+
+	// 載入面板內容
+	loadPanelContents() {
+		return ErrorHandler.safeExecute(async () => {
+			const loadPromises = panels.map(async (panel) => {
+				const contentDiv = ErrorHandler.safeQuerySelector(`#${panel.id}-content`);
+				if (!contentDiv) {
+					console.warn(`Content container not found for panel: ${panel.id}`);
+					return;
+				}
+				
+				// 載入 HTML
+				if (panel.html) {
+					try {
+						const response = await ErrorHandler.safeFetch(panel.html);
+						const html = await response.text();
+						contentDiv.innerHTML = html;
+						
+						// 載入對應的 JavaScript
+						if (panel.js && panel.js.trim() !== "") {
+							await this.loadScript(panel.js);
+							console.log(`Successfully loaded: ${panel.html} and ${panel.js}`);
+						} else {
+							console.log(`Successfully loaded: ${panel.html}`);
+						}
+					} catch (error) {
+						console.error(`Failed to load panel content for ${panel.id}:`, error);
+						contentDiv.innerHTML = ErrorHandler.getErrorTemplate(error.message);
+					}
+				}
+			});
+			
+			await Promise.allSettled(loadPromises);
+			return true;
+		}, false, 'Load panel contents operation');
+	}
+
+	// 動態載入腳本
+	async loadScript(src) {
+		return new Promise((resolve, reject) => {
+			ErrorHandler.safeExecute(() => {
+				// 檢查是否已經載入
+				if (ErrorHandler.safeQuerySelector(`script[src="${src}"]`)) {
+					resolve();
+					return;
+				}
+				
+				const script = document.createElement('script');
+				script.src = src;
+				script.onload = () => {
+					console.log(`Script loaded successfully: ${src}`);
+					resolve();
+				};
+				script.onerror = (error) => {
+					console.error(`Failed to load script: ${src}`, error);
+					reject(new Error(`Script load failed: ${src}`));
+				};
+				
+				// 添加超時處理
+				setTimeout(() => {
+					if (!script.onload.called) {
+						script.onerror(new Error('Script load timeout'));
+					}
+				}, 10000); // 10秒超時
+				
+				document.head.appendChild(script);
+			}, null, `Load script: ${src}`);
+		});
+	}
+
+	// 保存狀態到 localStorage
+	saveState() {
+		return ErrorHandler.safeExecute(() => {
+			const stateToSave = JSON.stringify(this.state);
+			localStorage.setItem(CONFIG.STORAGE_KEY, stateToSave);
+			return true;
+		}, false, 'Save state operation');
+	}
+
+	// 從 localStorage 載入狀態
+	loadState() {
+		return ErrorHandler.safeExecute(() => {
+			const saved = localStorage.getItem(CONFIG.STORAGE_KEY);
+			if (saved) {
+				try {
+					const parsedState = JSON.parse(saved);
+					
+					// 驗證載入的狀態結構
+					if (this.validateState(parsedState)) {
+						this.state = parsedState;
+						console.log('Layout state loaded from localStorage');
+						return true;
+					} else {
+						console.warn('Invalid state structure, using default state');
+						this.state = { ...CONFIG.DEFAULT_STATE };
+						return false;
+					}
+				} catch (parseError) {
+					console.error('Failed to parse saved state:', parseError);
+					this.state = { ...CONFIG.DEFAULT_STATE };
+					return false;
+				}
+			} else {
+				console.log('No saved state found, using default state');
+				this.state = { ...CONFIG.DEFAULT_STATE };
+				return true;
+			}
+		}, false, 'Load state operation');
+	}
+
+	// 驗證狀態結構
+	validateState(state) {
+		return ErrorHandler.safeExecute(() => {
+			if (!state || typeof state !== 'object') {
+				return false;
+			}
+			
+			const requiredPanes = ['pane1', 'pane2'];
+			const requiredProps = ['width', 'visible'];
+			
+			for (const pane of requiredPanes) {
+				if (!state[pane] || typeof state[pane] !== 'object') {
+					return false;
+				}
+				
+				for (const prop of requiredProps) {
+					if (!(prop in state[pane])) {
+						return false;
+					}
+				}
+				
+				// 驗證數值範圍
+				if (typeof state[pane].width !== 'number' || 
+					state[pane].width < 0 || state[pane].width > 100) {
+					return false;
+				}
+				
+				if (typeof state[pane].visible !== 'boolean') {
+					return false;
+				}
+			}
+			
+			return true;
+		}, false, 'State validation');
+	}
+
+	// 公共方法：設定佈局狀態
+	setState(newState) {
+		this.state = { ...this.state, ...newState };
+		this.applyState();
+		this.saveState();
+		this.updateButtons();
+	}
+
+	// 公共方法：獲取目前狀態
+	getState() {
+		return { ...this.state };
+	}
+
+	// 公共方法：匯出狀態設定
+	exportState() {
+		return JSON.stringify(this.state, null, 2);
+	}
+
+	// 公共方法：匯入狀態設定
+	importState(stateJson) {
+		try {
+			const state = JSON.parse(stateJson);
+			this.setState(state);
+			return true;
+		} catch (e) {
+			console.error('Failed to import state:', e);
+			return false;
+		}
+	}
+
+	// 切換面板內容
+	async switchContent(panelId, contentType) {
+		return ErrorHandler.safeExecute(async () => {
+			const content = CONFIG.CONTENT_MAP[contentType];
+			if (!content) {
+				console.warn(`Unknown content type: ${contentType}`);
+				return false;
+			}
+
+			const contentDiv = ErrorHandler.safeQuerySelector(`#${panelId}-content`);
+			if (!contentDiv) {
+				console.error(`Content container not found for panel: ${panelId}`);
+				return false;
+			}
+			
+			try {
+				// 載入 HTML
+				const response = await ErrorHandler.safeFetch(content.html);
+				const html = await response.text();
+				contentDiv.innerHTML = html;
+				
+				// 載入對應的 JavaScript
+				if (content.js && content.js.trim() !== "") {
+					await this.loadScript(content.js);
+					console.log(`Successfully switched to: ${contentType}`);
+					// 觸發內容載入完成事件
+					this.onContentLoaded(panelId, contentType);
+				} else {
+					console.log(`Successfully switched to: ${contentType}`);
+					this.onContentLoaded(panelId, contentType);
+				}
+				
+				return true;
+			} catch (error) {
+				console.error(`Failed to switch content to ${contentType}:`, error);
+				contentDiv.innerHTML = ErrorHandler.getErrorTemplate(`無法載入 ${contentType} 內容`);
+				return false;
+			}
+		}, false, `Switch content to ${contentType}`);
+	}
+
+	// 內容載入完成回調
+	onContentLoaded(panelId, contentType) {
+		return ErrorHandler.safeExecute(() => {
+			// 可以在這裡添加特定內容的初始化邏輯
+			if (contentType === 'list') {
+				// 如果載入的是列表，可以應用當前的篩選設定
+				setTimeout(() => this.applyFilters(), CONFIG.CONTENT_LOAD_DELAY);
+			}
+			
+			// 觸發自定義事件
+			const event = new CustomEvent('contentLoaded', {
+				detail: { panelId, contentType }
+			});
+			document.dispatchEvent(event);
+			
+			return true;
+		}, false, 'Content loaded callback');
+	}
+
+	// 應用篩選
+	applyFilters() {
+		// 獲取所有篩選值
+		const filters = {
+			pane1: {
+				station: document.getElementById('station-filter')?.value || '',
+				time: document.getElementById('time-filter')?.value || '',
+				status: document.getElementById('status-filter')?.value || ''
+			},
+			pane2: {
+				station: document.getElementById('station-filter-2')?.value || '',
+				time: document.getElementById('time-filter-2')?.value || '',
+				status: document.getElementById('status-filter-2')?.value || ''
+			}
+		};
+
+		// 觸發自定義事件，讓各個頁面可以監聽並處理篩選
+		const filterEvent = new CustomEvent('panelFiltersChanged', {
+			detail: filters
+		});
+		document.dispatchEvent(filterEvent);
+
+		console.log('Applied filters:', filters);
+	}
+
+	// 顯示 panel2（輔助面板）
+	showPanel2() {
+		return ErrorHandler.safeExecute(() => {
+			this.state.pane1.visible = true;
+			this.state.pane1.width = CONFIG.DEFAULT_WIDTH;
+			this.state.pane2.visible = true;
+			this.state.pane2.width = CONFIG.DEFAULT_WIDTH;
+			
+			this.applyState();
+			this.saveState();
+			this.updateAuxiliaryButton();
+			
+			return true;
+		}, false, 'Show panel2 operation');
+	}
+
+	// 隱藏 panel2
+	hidePanel2() {
+		return ErrorHandler.safeExecute(() => {
+			this.state.pane1.visible = true;
+			this.state.pane1.width = 100;
+			this.state.pane2.visible = false;
+			this.state.pane2.width = 0;
+			
+			this.applyState();
+			this.saveState();
+			this.updateAuxiliaryButton();
+			
+			return true;
+		}, false, 'Hide panel2 operation');
+	}
+
+	// 更新輔助面板按鈕的顯示狀態
+	updateAuxiliaryButton() {
+		return ErrorHandler.safeExecute(() => {
+			// 更新緩存的輔助按鈕引用
+			if (!this.elements.auxiliaryBtn) {
+				this.elements.auxiliaryBtn = ErrorHandler.safeQuerySelector('.auxiliary-btn');
+			}
+			
+			if (this.elements.auxiliaryBtn) {
+				if (this.state.pane2.visible) {
+					this.elements.auxiliaryBtn.style.display = 'none';
+				} else {
+					this.elements.auxiliaryBtn.style.display = 'inline-block';
+				}
+				return true;
+			} else {
+				console.warn('Auxiliary button not found');
+				return false;
+			}
+		}, false, 'Update auxiliary button operation');
+	}
+}
+
+// 全域佈局管理器實例
+let layoutManager;
+
+// 初始化
+document.addEventListener("DOMContentLoaded", () => {
+	layoutManager = new LayoutManager();
+	layoutManager.init();
+});
+
+// 匯出公共方法供外部使用
+window.LayoutManager = {
+	setState: (state) => layoutManager?.setState(state),
+	getState: () => layoutManager?.getState(),
+	resetLayout: () => layoutManager?.resetLayout(),
+	togglePanel: (panelId) => layoutManager?.togglePanel(panelId),
+	maximizePanel: (panelId) => layoutManager?.maximizePanel(panelId),
+	exportState: () => layoutManager?.exportState(),
+	importState: (stateJson) => layoutManager?.importState(stateJson),
+	switchContent: (panelId, contentType) => layoutManager?.switchContent(panelId, contentType),
+	applyFilters: () => layoutManager?.applyFilters(),
+	showPanel2: () => layoutManager?.showPanel2(),
+	hidePanel2: () => layoutManager?.hidePanel2()
+};

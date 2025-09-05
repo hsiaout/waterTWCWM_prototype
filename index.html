@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>水網監測平台</title>
+    
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="src/style/index.css">
+</head>
+<body>
+    <!-- 頂部導航 -->
+    <div class="top-nav py-2">
+        <div class="container">
+            <div class="row justify-content-between align-items-center">
+                <div class="col-auto">
+                    <span>台北自來水事業處</span>
+                </div>
+                <div class="col-auto">
+                    <div class="d-flex gap-3">
+                        <a href="#" class="text-decoration-none">系統說明</a>
+                        <a href="#" class="text-decoration-none">操作手冊</a>
+                        <a href="#" class="text-decoration-none">聯絡我們</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 主導航 -->
+    <header class="main-header py-3">
+        <div class="container">
+            <div class="row justify-content-between align-items-center">
+                <div class="col-md-4">
+                    <div class="d-flex align-items-center">
+                        <div class="logo me-2">💧</div>
+                        <div class="site-name">水網監測平台</div>
+                    </div>
+                </div>
+                <!-- <div class="col-md-4">
+                    <div class="search-wrapper">
+                        <input type="text" class="form-control pe-5" placeholder="搜尋監測站點、水質數據..." id="searchInput">
+                        <button class="search-btn" onclick="handleSearch()">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </div>
+                </div> -->
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero 區域 -->
+    <section class="hero-section">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-lg-8">
+					<div class="d-flex align-items-center gap-3">
+						<!-- <div class="hero-icon">
+							<i class="fas fa-tint"></i>
+						</div> -->
+						<h1 class="hero-title mb-0">服務大廳</h1>
+					</div>
+                    <!-- <p class="hero-subtitle ps-5 mb-0">聚焦企業營運，提升服務效力</p> -->
+                </div>
+                <!-- <div class="col-lg-4">
+                    <div class="row text-center">
+                        <div class="col-4">
+                            <div class="stat-item">
+                                <div class="stat-number">24/7</div>
+                                <div class="stat-label">即時監控</div>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="stat-item">
+                                <div class="stat-number">100+</div>
+                                <div class="stat-label">監測站點</div>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="stat-item">
+                                <div class="stat-number">99.9%</div>
+                                <div class="stat-label">系統可用性</div>
+                            </div>
+                        </div>
+                    </div>
+                </div> -->
+            </div>
+        </div>
+    </section>
+
+    <!-- 主要內容 -->
+    <main class="container py-5 fade-in">
+        <!-- 服務主題 -->
+        <section class="mb-5">
+            <h2 class="section-title mb-4">服務主題</h2>
+            <div class="row g-3 mb-3">
+                <div class="col-6 col-md-4 col-lg-3">
+                    <div class="service-card" onclick="navigateToService('supply')" 
+                         role="button" tabindex="0" onkeypress="handleKeyPress(event, 'supply')">
+                        <div class="service-icon">
+                            <i class="fas fa-faucet" style="color: #54c975;"></i>
+                        </div>
+                        <div class="service-name">供水</div>
+                    </div>
+                </div>
+                <div class="col-6 col-md-4 col-lg-3">
+                    <div class="service-card" onclick="navigateToService('purify')" 
+                         role="button" tabindex="0" onkeypress="handleKeyPress(event, 'purify')">
+                        <div class="service-icon">
+                            <i class="fas fa-industry" style="color: #26b6d1;"></i>
+                        </div>
+                        <div class="service-name">淨水</div>
+                    </div>
+                </div>
+                <div class="col-6 col-md-4 col-lg-3">
+                    <div class="service-card" onclick="navigateToService('quality')" 
+                         role="button" tabindex="0" onkeypress="handleKeyPress(event, 'quality')">
+                        <div class="service-icon">
+                            <i class="fas fa-flask" style="color: #6799fe;"></i>
+                        </div>
+                        <div class="service-name">水質</div>
+                    </div>
+                </div>
+                <div class="col-6 col-md-4 col-lg-3">
+                    <div class="service-card" onclick="navigateToService('zone-meter')" 
+                         role="button" tabindex="0" onkeypress="handleKeyPress(event, 'zone-meter')">
+                        <div class="service-icon">
+                            <i class="fas fa-chart-area" style="color: #f1975a;"></i>
+                        </div>
+                        <div class="service-name">分區計量</div>
+                    </div>
+                </div>
+                <div class="col-6 col-md-4 col-lg-3">
+                    <div class="service-card" onclick="navigateToService('main-meter')" 
+                         role="button" tabindex="0" onkeypress="handleKeyPress(event, 'main-meter')">
+                        <div class="service-icon">
+                            <i class="fas fa-tachometer-alt" style="color: #297ae0;"></i>
+                        </div>
+                        <div class="service-name">大表計量</div>
+                    </div>
+                </div>
+				<div class="col-6 col-md-4 col-lg-3">
+					<div class="service-card" onclick="navigateToService('emergency')" role="button" tabindex="0"
+						onkeypress="handleKeyPress(event, 'emergency')">
+						<div class="service-icon">
+							<i class="fas fa-exclamation-triangle" style="color: #e02966;"></i>
+						</div>
+						<div class="service-name">緊急應變</div>
+					</div>
+				</div>
+				<!-- <div class="col-6 col-md-4 col-lg-3">
+					<div class="service-card" onclick="navigateToService('analysis')" 
+						 role="button" tabindex="0" onkeypress="handleKeyPress(event, 'analysis')">
+						<div class="service-icon">
+							<i class="fas fa-chart-line" style="color: #7829e0;"></i>
+						</div>
+						<div class="service-name">統計查詢</div>
+					</div>
+				</div> -->
+			</div>
+        </section>
+		
+
+        <!-- 功能按鈕 -->
+        <section>
+			<h2 class="section-title mb-4">模式</h2>
+            <div class="row g-3">
+                <div class="col-lg-4 col-md-6">
+                    <a href="#" class="action-btn btn-success" onclick="navigateToService('map')">
+                        <i class="fas fa-map-marked-alt fs-2"></i>
+                        <span class="fw-bold">地圖</span>
+                    </a>
+                </div>
+                <div class="col-lg-4 col-md-6">
+                    <a href="#" class="action-btn btn-primary" onclick="navigateToService('chart')">
+                        <i class="fas fa-chart-pie fs-2"></i>
+                        <span class="fw-bold">圖譜</span>
+                    </a>
+                </div>
+                <div class="col-lg-4 col-md-6">
+                    <a href="#" class="action-btn btn-warning" onclick="navigateToService('panorama')">
+                        <i class="fas fa-street-view fs-2"></i>
+                        <span class="fw-bold">360環景</span>
+                    </a>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Bootstrap 5 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        function navigateToService(service) {
+            // 添加點擊動畫效果
+            const element = event.target.closest('.service-card, .platform-card, .action-btn');
+            element.style.transform = 'scale(0.95)';
+            setTimeout(() => {
+                element.style.transform = '';
+            }, 150);
+
+            // 服務導航邏輯
+            console.log('導航到服務:', service);
+            
+            const serviceNames = {
+                'supply': '供水管理',
+                'purify': '淨水處理', 
+                'quality': '水質檢測',
+                'zone-meter': '分區計量',
+                'main-meter': '大表計量',
+                'analysis': '統計查詢',
+                'emergency': '緊急應變',
+                'map': '系統地圖',
+                'chart': '數據圖譜',
+                'panorama': '360環景'
+            };
+
+            // 這裡可以根據需要實現實際的頁面跳轉
+            alert(`即將跳轉到：${serviceNames[service]}`);
+            
+            // 實際應用中可以使用：
+            window.location.href = `/page.html`;
+            // 或者使用 SPA 路由
+        }
+
+        // 處理鍵盤事件
+        function handleKeyPress(event, service) {
+            if (event.key === 'Enter' || event.key === ' ') {
+                event.preventDefault();
+                navigateToService(service);
+            }
+        }
+
+        // 搜尋功能
+        function handleSearch() {
+            const searchTerm = document.getElementById('searchInput').value;
+            if (searchTerm.trim()) {
+                alert(`搜尋關鍵字：${searchTerm}`);
+                // 實際應用中實現搜尋邏輯
+            }
+        }
+
+        // Enter 鍵搜尋
+        document.getElementById('searchInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                handleSearch();
+            }
+        });
+
+        // 頁面載入動畫
+        document.addEventListener('DOMContentLoaded', function() {
+            const cards = document.querySelectorAll('.service-card, .platform-card');
+            cards.forEach((card, index) => {
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(20px)';
+                setTimeout(() => {
+                    card.style.transition = 'all 0.6s ease';
+                    card.style.opacity = '1';
+                    card.style.transform = 'translateY(0)';
+                }, index * 100);
+            });
+        });
+    </script>
+</body>
+</html>
