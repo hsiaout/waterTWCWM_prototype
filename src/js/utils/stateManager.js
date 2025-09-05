@@ -19,7 +19,6 @@ export class StateManager {
 			
 			// 觸發狀態更新事件（如果需要的話）
 			this.notifyStateChange();
-			
 			return true;
 		}, false, 'Save state operation');
 	}
@@ -28,6 +27,12 @@ export class StateManager {
 	notifyStateChange() {
 		// 這裡可以添加其他狀態同步的邏輯
 		// 例如：觸發自定義事件、更新其他相關組件等
+		console.log(this.state)
+		if(this.state.panel2.visible){
+			document.getElementById("openPanel2Btn").style.display = "none";
+		}else{
+			document.getElementById("openPanel2Btn").style.display = "inline-block";
+		}
 	}
 
 	// 載入狀態

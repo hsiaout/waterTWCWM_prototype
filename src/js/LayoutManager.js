@@ -54,18 +54,15 @@ export class LayoutManager {
 				[panelId]: { ...currentState[panelId], visible: false },
 				[otherPanelId]: { ...currentState[otherPanelId], visible: true, width: 100 }
 			};
-			this.stateManager.setState(newState);
+			this.setState(newState);
 		} else {
 			// 顯示面板
 			const newState = {
 				[panelId]: { ...currentState[panelId], visible: true, width: CONFIG.DEFAULT_WIDTH },
 				[otherPanelId]: { ...currentState[otherPanelId], width: CONFIG.DEFAULT_WIDTH }
 			};
-			this.stateManager.setState(newState);
+			this.setState(newState);
 		}
-		
-		this.applyState();
-		this.stateManager.saveState();
 	}
 
 	// 最大化面板
@@ -82,11 +79,8 @@ export class LayoutManager {
 				[panelId]: { ...currentState[panelId], visible: true, width: 100 },
 				[otherPanelId]: { ...currentState[otherPanelId], visible: false, width: 0 }
 			};
-			this.stateManager.setState(newState);
+			this.setState(newState, { save: true });
 		}
-		
-		this.applyState();
-		this.stateManager.saveState();
 	}
 
 	// 重置佈局
@@ -94,6 +88,7 @@ export class LayoutManager {
 		this.stateManager.resetState();
 		this.applyState();
 		this.stateManager.saveState();
+		this.updateAuxiliaryButton();
 	}
 
 	// 顯示 panel2（輔助面板）
@@ -102,9 +97,7 @@ export class LayoutManager {
 			panel1: { width: CONFIG.DEFAULT_WIDTH, visible: true },
 			panel2: { width: CONFIG.DEFAULT_WIDTH, visible: true }
 		};
-		this.stateManager.setState(newState);
-		this.applyState();
-		this.stateManager.saveState();
+		this.setState(newState);
 		this.updateAuxiliaryButton();
 	}
 
@@ -114,9 +107,7 @@ export class LayoutManager {
 			panel1: { width: 100, visible: true },
 			panel2: { width: 0, visible: false }
 		};
-		this.stateManager.setState(newState);
-		this.applyState();
-		this.stateManager.saveState();
+		this.setState(newState);
 		this.updateAuxiliaryButton();
 	}
 
@@ -127,10 +118,12 @@ export class LayoutManager {
 	}
 
 	// 公共 API 方法
-	setState(newState) {
+	setState(newState, options = { save: true }) {
 		this.stateManager.setState(newState);
 		this.applyState();
-		this.stateManager.saveState();
+		if (options.save) {
+			this.stateManager.saveState();
+		}
 	}
 
 	getState() {

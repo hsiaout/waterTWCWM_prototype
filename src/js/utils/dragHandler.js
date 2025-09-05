@@ -78,8 +78,8 @@ export class DragHandler {
 				panel2: { ...this.layoutManager.stateManager.state.panel2, width: 100 - clampedPercentage }
 			};
 			
-			this.layoutManager.stateManager.setState(newState);
-			this.layoutManager.applyState();
+			// 拖曳過程中不儲存狀態
+			this.layoutManager.setState(newState, { save: false });
 		}, null, 'Drag operation');
 	}
 
@@ -107,7 +107,9 @@ export class DragHandler {
 			document.body.style.cursor = '';
 			document.body.style.userSelect = '';
 			
-			this.layoutManager.stateManager.saveState();
+			// 結束拖曳時保存最終狀態
+			const currentState = this.layoutManager.getState();
+			this.layoutManager.setState(currentState, { save: true });
 		}, null, 'End drag operation');
 	}
 }
