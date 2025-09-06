@@ -140,6 +140,7 @@ export class ContentManager {
     
     /**
      * 獲取主題配置
+     * 簡化版本：移除不需要的資料類型映射
      */
     getThemeConfigs() {
         return {
@@ -165,40 +166,23 @@ export class ContentManager {
             
             // Panel 1 主導航對應的檔案路徑配置
             panel1Themes: {
-                // 列表類型主題 - 使用相同的 list.html，只有資料篩選不同
-                listThemes: {
-                    '供水': { dataType: 'water_supply' },
-                    '淨水': { dataType: 'water_treatment' },
-                    '水質': { dataType: 'water_quality' },
-                    '分區計量': { dataType: 'zone_metering' },
-                    '大表計量': { dataType: 'main_metering' }
-                },
-                
-                // 其他類型主題 - 使用不同的 HTML 檔案
-                otherThemes: {
-                    '地圖': {
-                        html: 'src/page/map.html',
-                        js: null
-                    },
-                    '圖譜': {
-                        html: 'src/page/PID.html',
-                        js: null
-                    },
-                    '環景': {
-                        html: 'src/page/surround.html',
-                        js: null
-                    },
-                    '緊急應變圖台': {
-                        html: 'src/page/map.html',
-                        js: null
-                    }
-                },
-                
-                // 基礎模板配置
+                // 基礎模板配置 - 所有列表主題都使用同一個 list.html
                 templates: {
                     list: {
                         html: 'src/page/list.html',
                         js: 'src/page/list.js'
+                    },
+                    map: {
+                        html: 'src/page/map.html',
+                        js: null
+                    },
+                    PID: {
+                        html: 'src/page/PID.html',
+                        js: null
+                    },
+                    surround: {
+                        html: 'src/page/surround.html',
+                        js: null
                     }
                 }
             }
@@ -209,19 +193,21 @@ export class ContentManager {
 
     /**
      * 根據主題名稱獲取主題類型
+     * 簡化版本：直接映射主題名稱到類型
      * @param {string} themeName - 主題名稱
      * @returns {string|null} 主題類型
      */
     getThemeTypeByName(themeName) {
-        const configs = this.getThemeConfigs();
-        
-        // 列表類型主題都對應到 'list'
-        if (configs.panel1Themes.listThemes[themeName]) {
-            return 'list';
-        }
-        
-        // 其他主題的對應關係
+        // 簡化的主題映射 - 所有列表相關的都歸為 'list'
         const themeMapping = {
+            // 列表類型主題
+            '供水': 'list',
+            '淨水': 'list',
+            '水質': 'list',
+            '分區計量': 'list',
+            '大表計量': 'list',
+            
+            // 其他主題類型
             '地圖': 'map',
             '圖譜': 'PID',
             '環景': 'surround',
@@ -233,41 +219,20 @@ export class ContentManager {
 
     /**
      * 根據主題類型獲取配置
+     * 簡化版本：直接從 templates 獲取
      * @param {string} themeType - 主題類型
      * @returns {Object|null} 主題配置
      */
     getThemeConfig(themeType) {
         const configs = this.getThemeConfigs();
-        
-        // 列表類型使用統一的 list 模板
-        if (themeType === 'list') {
-            return configs.panel1Themes.templates.list;
-        }
-        
-        // 其他主題類型
-        const themeMapping = {
-            'map': configs.panel1Themes.otherThemes['地圖'],
-            'PID': configs.panel1Themes.otherThemes['圖譜'],
-            'surround': configs.panel1Themes.otherThemes['環景']
-        };
-        
-        return themeMapping[themeType] || null;
-    }
-
-    /**
-     * 根據主題標籤獲取資料類型
-     * @param {string} themeLabel - 主題標籤
-     * @returns {string|null} 資料類型
-     */
-    getDataTypeByLabel(themeLabel) {
-        const configs = this.getThemeConfigs();
-        return configs.panel1Themes.listThemes[themeLabel]?.dataType || null;
+        return configs.panel1Themes.templates[themeType] || null;
     }
 
     // ===== 預載功能 =====
 
     /**
      * 預載所有主題內容
+     * 簡化版本：載入所有主題模板到對應容器
      */
     async preloadAllThemes() {
         console.log('開始預載所有主題內容...');
@@ -275,22 +240,15 @@ export class ContentManager {
         const configs = this.getThemeConfigs();
         const loadPromises = [];
         
-        // 預載 Panel 1 - List 主題內容（只載入一次）
-        const listContentId = 'panel1-list-content';
-        loadPromises.push(this.loadContent(configs.panel1Themes.templates.list, listContentId));
-        
-        // 預載 Panel 1 - 其他主題內容
-        Object.entries(configs.panel1Themes.otherThemes).forEach(([themeName, config]) => {
-            const themeType = this.getThemeTypeByName(themeName);
-            if (themeType && themeType !== 'list') {
-                const contentId = `panel1-${themeType}-content`;
-                loadPromises.push(this.loadContent(config, contentId));
-            }
+        // 預載 Panel 1 所有主題內容
+        Object.entries(configs.panel1Themes.templates).forEach(([themeType, config]) => {
+            const contentId = `panel1-${themeType}-content`;
+            loadPromises.push(this.loadContent(config, contentId));
         });
         
         // 預載 Panel 2 所有主題內容
-        Object.entries(configs.panel2Themes).forEach(([theme, config]) => {
-            const contentId = `panel2-${theme}-content`;
+        Object.entries(configs.panel2Themes).forEach(([themeType, config]) => {
+            const contentId = `panel2-${themeType}-content`;
             loadPromises.push(this.loadContent(config, contentId));
         });
         
@@ -306,11 +264,12 @@ export class ContentManager {
 
     /**
      * Panel 1 主題切換函數（供主導航使用）
+     * 簡化版本：只負責顯示/隱藏對應的容器
      * @param {string} themeType - 主題類型 (list, map, PID, surround)
-     * @param {string} themeLabel - 主題標籤（用於識別點擊的選項）
+     * @param {string} themeLabel - 主題標籤（用於識別點擊的選項，僅用於日誌）
      */
     switchPanel1Theme(themeType, themeLabel) {
-        console.log(`主導航主題切換: ${themeType}, ${themeLabel}`);
+        console.log(`主導航主題切換: ${themeType} (${themeLabel})`);
 
         // 隱藏所有 Panel 1 容器
         const panel1Containers = document.querySelectorAll('#panel1 .panel-container');
@@ -322,43 +281,9 @@ export class ContentManager {
         const targetContainer = document.getElementById(`panel1-${themeType}`);
         if (targetContainer) {
             targetContainer.style.display = 'flex';
-            console.log(`✓ 顯示容器: panel1-${themeType} (${themeLabel})`);
-            
-            // 如果是列表類型，設定資料篩選
-            if (themeType === 'list') {
-                const dataType = this.getDataTypeByLabel(themeLabel);
-                if (dataType) {
-                    this.applyListDataFilter(themeType, dataType, themeLabel);
-                }
-            }
+            console.log(`✓ 顯示容器: panel1-${themeType}`);
         } else {
             console.error(`找不到容器: panel1-${themeType}`);
-        }
-    }
-
-    /**
-     * 應用列表資料篩選
-     * @param {string} themeType - 主題類型
-     * @param {string} dataType - 資料類型
-     * @param {string} themeLabel - 主題標籤
-     */
-    applyListDataFilter(themeType, dataType, themeLabel) {
-        console.log(`✓ 應用資料篩選: ${dataType} (${themeLabel})`);
-        
-        // 觸發自定義事件，通知 list.js 更新資料
-        const filterEvent = new CustomEvent('listDataFilterChange', {
-            detail: {
-                dataType: dataType,
-                themeLabel: themeLabel,
-                containerId: `panel1-${themeType}-content`
-            }
-        });
-        
-        document.dispatchEvent(filterEvent);
-        
-        // 也可以直接調用全域函數（如果 list.js 有提供）
-        if (window.updateListData && typeof window.updateListData === 'function') {
-            window.updateListData(dataType, themeLabel);
         }
     }
 

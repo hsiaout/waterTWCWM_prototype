@@ -155,6 +155,46 @@ export class LayoutManager {
 		this.updateAuxiliaryButton();
 	}
 
+	// 應用手機版佈局
+	applyMobileLayout() {
+		console.log('LayoutManager: 應用手機版佈局...');
+		
+		// 使用現有的 hidePanel2 方法，但不保存狀態
+		const currentState = this.stateManager.getState();
+		const mobileState = {
+			panel1: { ...currentState.panel1, width: 100, visible: true },
+			panel2: { ...currentState.panel2, visible: false }
+		};
+		
+		// 不保存到 localStorage，避免影響桌面版
+		this.setState(mobileState, { save: false });
+		
+		// 隱藏所有輔助面板按鈕
+		const auxiliaryButtons = document.querySelectorAll('.js-open-panel2-btn');
+		auxiliaryButtons.forEach(btn => {
+			btn.style.display = 'none';
+		});
+		
+		console.log('✓ LayoutManager: 手機版佈局已應用');
+	}
+
+	// 恢復桌面版佈局
+	restoreDesktopLayout() {
+		console.log('LayoutManager: 恢復桌面版佈局...');
+		
+		// 顯示輔助面板按鈕
+		const auxiliaryButtons = document.querySelectorAll('.js-open-panel2-btn');
+		auxiliaryButtons.forEach(btn => {
+			btn.style.display = 'inline-block';
+		});
+		
+		// 恢復之前保存的狀態
+		this.applyState();
+		this.updateAuxiliaryButton();
+		
+		console.log('✓ LayoutManager: 桌面版佈局已恢復');
+	}
+
 	// 更新輔助面板按鈕
 	updateAuxiliaryButton() {
 		// simple-panels.html 的按鈕邏輯由 updateWidthDisplay 處理

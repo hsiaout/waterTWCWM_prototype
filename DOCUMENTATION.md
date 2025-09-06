@@ -2,7 +2,6 @@
 
 ## 📋 目錄
 - [專案概覽](#專案概覽)
-- [重構說明](#重構說明)
 - [檔案結構](#檔案結構)
 - [核心模組說明](#核心模組說明)
 - [主要功能](#主要功能)
@@ -15,92 +14,45 @@
 
 ## 🌐 專案概覽
 
-水網監測平台是一個基於 Web 的即時水質監測系統，採用**全新模組化架構設計**，支援多面板佈局、動態內容載入、拖拽調整等功能。
+水網監測平台是一個基於 Web 的即時水質監測系統，採用**模組化架構設計**，支援多面板佈局、動態內容載入、拖拽調整、手機響應式等功能。
 
 ### 🎯 主要特色
-- **響應式雙面板佈局** - 支援拖拽調整大小
+- **響應式雙面板佈局** - 支援拖拽調整大小，手機版自動單面板顯示
 - **動態內容切換** - 列表、地圖、環景、圖譜等多種視圖
 - **狀態持久化** - 自動保存佈局設定到 localStorage
-- **全新模組化架構** - 按功能領域分類，易於維護和擴展
+- **模組化架構** - 按功能領域分類，易於維護和擴展
 - **統一 API 風格** - 所有模組採用 ES6 類別和模組語法
 - **清晰的依賴關係** - 單向依賴，避免循環依賴
 - **錯誤處理機制** - 完善的錯誤捕獲和恢復
+- **手機響應式支援** - 自動偵測設備類型並調整佈局
 
 ### 🛠️ 技術堆疊
 - **前端框架**: Bootstrap 5
 - **圖標庫**: Font Awesome 6
 - **數據表格**: DataTables
-- **JavaScript**: ES6+ 模組化 (全面重構)
+- **JavaScript**: ES6+ 模組化
 - **架構模式**: MVC + 依賴注入
 - **樣式**: SCSS/CSS3
 - **構建工具**: 原生 ES6 模組
 
 ---
 
-## 🔄 重構說明
-
-### 📅 重構時間：2025年9月6日
-
-### 🎯 重構目標
-1. **功能分離** - 將混雜的功能按照領域進行清晰分類
-2. **API 統一** - 統一模組化語法，提升程式碼一致性
-3. **依賴解耦** - 建立清晰的模組依賴關係
-4. **維護性提升** - 讓程式碼更容易理解、測試和擴展
-
-### 🏗️ 架構變化
-
-#### **重構前架構**
-```
-src/js/
-├── layout.js (IIFE + 混雜功能)
-├── LayoutManager.js (模組 + 全域 API)
-├── uiRenderer.js (靜態方法)
-└── 散落的工具函數
-```
-
-#### **重構後架構**
-```
-src/js/
-├── AppController.js          # 統一應用程式入口
-├── core/                     # 核心功能模組
-│   ├── LayoutManager.js     # 佈局管理
-│   └── ContentManager.js    # 內容管理 (重構自 layout.js)
-├── ui/                      # UI 控制模組
-│   └── PanelController.js   # 面板控制 (提取自 simple-panels.html)
-└── utils/                   # 工具模組
-    ├── stateManager.js
-    ├── dragHandler.js
-    └── errorHandler.js
-```
-
-### 📋 重構成果
-- ✅ **程式碼減少約 40%** - 移除重複和冗餘代碼
-- ✅ **模組職責明確** - 每個模組單一職責
-- ✅ **API 統一** - 所有模組採用 ES6 類別語法
-- ✅ **100% 向後相容** - 保持所有原有功能
-- ✅ **依賴關係清晰** - 單向依賴，便於測試
-
----
-
-## 📁 檔案結構
+##  檔案結構
 
 ```
 WaterTWCWM_prototype/
 ├── index.html                    # 主頁面 (LOBBY)
-├── simple-panels.html            # 監測平台主頁 (重構後主要入口)
-├── page.html                     # 監測平台主頁 (已移除)
+├── simple-panels.html            # 監測平台主頁
 ├── DOCUMENTATION.md              # 本文檔
 ├── src/
-│   ├── js/                       # JavaScript 模組 (重構後)
-│   │   ├── AppController.js      # 🆕 統一應用程式控制器
+│   ├── js/                       # JavaScript 模組
+│   │   ├── AppController.js      # 統一應用程式控制器
 │   │   ├── config.js            # 配置常量
-│   │   ├── layout.js            # 空檔案 (向後相容層)
-│   │   ├── layout.js.backup     # 舊版 layout.js 備份
-│   │   ├── core/                # 🆕 核心功能模組
-│   │   │   ├── LayoutManager.js # 佈局管理器 (重構後)
-│   │   │   └── ContentManager.js # 🆕 內容管理器 (重構自 layout.js)
-│   │   ├── ui/                  # 🆕 UI 控制模組
-│   │   │   └── PanelController.js # 🆕 面板控制器
+│   │   ├── core/                # 核心功能模組
+│   │   │   ├── LayoutManager.js # 佈局管理器
+│   │   │   └── ContentManager.js # 內容管理器
+│   │   ├── ui/                  # UI 控制模組
+│   │   │   └── PanelController.js # 面板控制器
 │   │   └── utils/               # 工具模組
 │   │       ├── errorHandler.js  # 錯誤處理
 │   │       ├── stateManager.js  # 狀態管理
@@ -113,33 +65,33 @@ WaterTWCWM_prototype/
 │   │   ├── map.html             # 地圖頁面
 │   │   ├── PID.html             # 圖譜頁面
 │   │   └── surround.html        # 環景頁面
-│   └── style/                    # 樣式檔案
-│       ├── index.scss           # 主頁樣式
-│       ├── index.css            # 編譯後的CSS
-│       ├── page.scss            # 面板樣式
-│       └── page.css             # 編譯後的CSS
-└── 已移除的檔案/
-    ├── uiRenderer.js            # 功能已整合到 LayoutManager
-    ├── contentLoader.js         # 重構為 ContentManager
-    ├── eventHandler.js          # 功能分散到各控制器
-    └── layout-modular.js        # 由 AppController 取代
+│   ├── style/                    # 樣式檔案
+│   │   ├── index.scss           # 主頁樣式
+│   │   ├── index.css            # 編譯後的CSS
+│   │   ├── page.scss            # 面板樣式
+│   │   └── page.css             # 編譯後的CSS
+│   └── images/                   # 圖片資源
 ```
 
-### 🔥 重構亮點
+### � 架構特色
 - **📂 按功能領域分類** - core/, ui/, utils/ 目錄結構清晰
 - **🎯 單一職責原則** - 每個模組功能專一
 - **♻️ 100% 向後相容** - 保持所有原有 API
-- **🗑️ 移除冗餘代碼** - 約減少 40% 程式碼量
+- **🗑️ 精簡高效** - 移除冗餘代碼，提升效能
 
 ---
 
 ## 🧩 核心模組說明
 
-### 🎮 AppController.js - 統一應用程式控制器 (新增)
+### 🎮 AppController.js - 統一應用程式控制器
 ```javascript
 export class AppController {
     constructor()                   // 初始化所有管理器
     async initialize()              // 統一初始化所有模組
+    detectMobile()                  // 偵測是否為手機設備
+    applyMobileLayout()             // 應用手機版佈局
+    restoreDesktopLayout()          // 恢復桌面版佈局
+    bindResponsiveEvents()          // 監聽視窗大小變化
     setupGlobalAPI()               // 設置全域 API 供 HTML 調用
     getModules()                   // 獲取模組實例 (供調試使用)
 }
@@ -150,6 +102,7 @@ export class AppController {
 - 🔗 **依賴注入** - 管理模組間的依賴關係
 - 🌐 **全域 API 設置** - 為 HTML 提供統一的全域函數
 - 🔧 **模組協調** - 確保正確的初始化順序
+- 📱 **響應式管理** - 自動處理手機和桌面版佈局切換
 
 **依賴關係:**
 ```
@@ -161,30 +114,33 @@ AppController
             └── → ContentManager
 ```
 
-### 🏗️ core/LayoutManager.js - 佈局管理器 (重構)
+### 🏗️ core/LayoutManager.js - 佈局管理器
 ```javascript
 export class LayoutManager {
     constructor()                   // 初始化狀態和拖拽處理器
     async init(options)            // 系統初始化
     applyState()                   // 應用當前狀態
-    applyVisualState(state)        // 🆕 內嵌 UI 渲染功能
+    applyVisualState(state)        // 內嵌 UI 渲染功能
     togglePanel(panelId)           // 切換面板顯示/隱藏
     maximizePanel(panelId)         // 最大化面板
     resetLayout()                  // 重置佈局為 50:50
     showPanel2(options)            // 顯示輔助面板
     hidePanel2()                   // 隱藏輔助面板
+    applyMobileLayout()            // 應用手機版佈局
+    restoreDesktopLayout()         // 恢復桌面版佈局
     setState(newState, options)    // 設定新狀態
     getState()                     // 獲取當前狀態
 }
 ```
 
-**重構亮點:**
-- ✅ **功能內聚** - 將 UIRenderer 功能整合進來
-- ✅ **依賴簡化** - 只依賴 StateManager 和 DragHandler
-- ✅ **API 清晰** - 專注於佈局相關操作
-- ✅ **無全域初始化** - 由 AppController 統一管理
+**主要功能:**
+- 🎛️ **佈局控制** - 管理雙面板佈局的所有操作
+- 📱 **響應式佈局** - 處理手機和桌面版的佈局切換
+- 💾 **狀態管理** - 與 StateManager 協作管理佈局狀態
+- 🎨 **視覺渲染** - 將佈局狀態應用到 DOM 元素
+- 🖱️ **拖拽支援** - 整合 DragHandler 提供拖拽調整功能
 
-### 📦 core/ContentManager.js - 內容管理器 (新增)
+### 📦 core/ContentManager.js - 內容管理器
 ```javascript
 export class ContentManager {
     constructor()                          // 初始化腳本追蹤
@@ -208,10 +164,9 @@ export class ContentManager {
 - 📋 **配置管理** - 集中管理主題配置
 - ⚡ **腳本管理** - 智能腳本載入，避免重複載入
 - 🔄 **預載機制** - 提升切換速度
+- 🔍 **篩選功能** - 處理列表資料的篩選邏輯
 
-**來源:** 重構自原本的 `layout.js`，採用 ES6 類別語法
-
-### 🎛️ ui/PanelController.js - 面板控制器 (新增)
+### 🎛️ ui/PanelController.js - 面板控制器
 ```javascript
 export class PanelController {
     constructor(layoutManager, contentManager) // 依賴注入
@@ -232,10 +187,9 @@ export class PanelController {
 - 📊 **顯示更新** - 面板寬度、按鈕狀態等 UI 更新
 - 🎯 **事件協調** - 統一管理 UI 事件
 - 🔗 **API 橋接** - 為 HTML 提供簡潔的調用介面
+- 📱 **響應式支援** - 配合 AppController 處理手機版 UI 調整
 
-**來源:** 提取自原本 `simple-panels.html` 中的內嵌 JavaScript
-
-### 1. **config.js** - 配置中心 (保持不變)
+### 1. **config.js** - 配置中心
 ```javascript
 export const CONFIG = {
     MIN_WIDTH: 10,              // 最小面板寬度 (%)
@@ -244,13 +198,10 @@ export const CONFIG = {
     MAXIMIZE_THRESHOLD: 95,     // 最大化閾值 (%)
     CONTENT_LOAD_DELAY: 100,    // 內容載入延遲 (ms)
     STORAGE_KEY: 'panelLayoutState', // localStorage 鍵名
-    
-    // 🚫 已移除 CONTENT_MAP (移至 ContentManager)
-    // 🚫 已移除 PANELS 配置 (不再需要)
 };
 ```
 
-### 2. **utils/stateManager.js** - 狀態管理器 (保持不變)
+### 2. **utils/stateManager.js** - 狀態管理器
 ```javascript
 export class StateManager {
     constructor()                    // 初始化狀態
@@ -265,7 +216,7 @@ export class StateManager {
 }
 ```
 
-### 3. **utils/dragHandler.js** - 拖拽處理器 (保持不變)
+### 3. **utils/dragHandler.js** - 拖拽處理器
 ```javascript
 export class DragHandler {
     constructor(layoutManager)      // 綁定佈局管理器
@@ -276,7 +227,7 @@ export class DragHandler {
 }
 ```
 
-### 4. **utils/errorHandler.js** - 錯誤處理工具 (保持不變)
+### 4. **utils/errorHandler.js** - 錯誤處理工具
 ```javascript
 export class ErrorHandler {
     // 安全的 DOM 查詢
@@ -292,24 +243,6 @@ export class ErrorHandler {
     static getErrorTemplate(message)
 }
 ```
-
-### 🗑️ 已移除的模組
-
-#### ❌ **uiRenderer.js** 
-- **移除原因:** 功能已整合到 `LayoutManager.applyVisualState()`
-- **影響:** 無，所有功能保持完整
-
-#### ❌ **contentLoader.js**
-- **移除原因:** 重構為 `ContentManager` 類別
-- **影響:** API 更清晰，功能更完整
-
-#### ❌ **eventHandler.js**
-- **移除原因:** 事件處理分散到各自的控制器
-- **影響:** 職責更明確，減少耦合
-
-#### ❌ **layout-modular.js**
-- **移除原因:** 由 `AppController` 統一管理
-- **影響:** 初始化邏輯更清晰
 
 ---
 
@@ -341,9 +274,9 @@ export class ErrorHandler {
 
 ## 🔌 API 參考
 
-### 🌐 全域 API (重構後)
+### 🌐 全域 API
 
-所有全域 API 現在由 `AppController` 統一設置，確保一致性和可靠性：
+所有全域 API 由 `AppController` 統一設置，確保一致性和可靠性：
 
 ```javascript
 // 面板控制 API (由 PanelController 提供)
@@ -363,7 +296,9 @@ window.LayoutManager = {
     exportState: () => {...},            // 匯出狀態為 JSON
     importState: (stateJson) => {...},   // 從 JSON 匯入狀態
     showPanel2: (options) => {...},      // 顯示輔助面板 (帶選項)
-    hidePanel2: () => {...}              // 隱藏輔助面板
+    hidePanel2: () => {...},             // 隱藏輔助面板
+    applyMobileLayout: () => {...},      // 應用手機版佈局
+    restoreDesktopLayout: () => {...}    // 恢復桌面版佈局
 };
 
 // 內容管理 API (由 ContentManager 提供)
@@ -377,6 +312,14 @@ window.LayoutContent = {
     getThemeTypeByName: (themeName) => {...}   // 獲取主題類型
 };
 
+// 手機版相關 API (由 AppController 提供)
+window.MobileUtils = {
+    isMobile: () => {...},               // 檢查是否為手機設備
+    detectMobile: () => {...},           // 重新偵測設備類型
+    applyMobileLayout: () => {...},      // 應用手機版佈局
+    restoreDesktopLayout: () => {...}    // 恢復桌面版佈局
+};
+
 // 資料篩選 API
 window.applyListDataFilter(themeType, dataType, themeLabel) // 應用篩選
 
@@ -384,7 +327,7 @@ window.applyListDataFilter(themeType, dataType, themeLabel) // 應用篩選
 window.appController                     // AppController 實例 (供調試)
 ```
 
-### 📋 狀態結構 (保持不變)
+### 📋 狀態結構
 
 ```javascript
 {
@@ -393,7 +336,7 @@ window.appController                     // AppController 實例 (供調試)
 }
 ```
 
-### 🎨 主題配置結構 (新增)
+### 🎨 主題配置結構
 
 ```javascript
 // Panel 2 主題配置
@@ -425,9 +368,9 @@ const panel1Themes = {
 };
 ```
 
-### 🎯 模組化 API (新增)
+### 🎯 模組化 API
 
-重構後，您也可以直接使用模組化 API：
+您也可以直接使用模組化 API：
 
 ```javascript
 // 直接導入模組
@@ -449,7 +392,7 @@ contentManager.switchPanel1Theme('list', '供水');
 panelController.updateWidthDisplay();
 ```
 
-### 🔄 自定義事件 (保持相容)
+### 🔄 自定義事件
 
 ```javascript
 // 內容載入完成事件
@@ -458,36 +401,23 @@ document.addEventListener('contentLoaded', (event) => {
     console.log(`內容載入完成: ${panelId} -> ${contentType}`);
 });
 
-// 列表資料篩選變更事件 (新增)
+// 列表資料篩選變更事件
 document.addEventListener('listDataFilterChange', (event) => {
     const { dataType, themeLabel, containerId } = event.detail;
     console.log(`篩選變更: ${dataType} (${themeLabel})`);
 });
 
-// 手動觸發篩選 (向下相容)
+// 手動觸發篩選
 document.dispatchEvent(new CustomEvent('applyFilters'));
-```
-
-### 🚫 已棄用的 API
-
-以下 API 已被新架構取代，但仍向下相容：
-
-```javascript
-// ❌ 舊版內容切換 (仍可用，但建議使用新 API)
-window.LayoutManager.switchContent(panelId, contentType)
-
-// ✅ 新版推薦方式
-window.showTheme(panelId, contentType)  // Panel 2
-window.switchPanel1Theme(themeType, themeLabel)  // Panel 1
 ```
 
 ---
 
 ## 📖 使用指南
 
-### 🚀 快速開始 (重構後)
+### 🚀 快速開始
 
-1. **基本載入 - 使用新架構**
+1. **基本載入 - 使用模組化架構**
 ```html
 <!DOCTYPE html>
 <html>
@@ -501,7 +431,7 @@ window.switchPanel1Theme(themeType, themeLabel)  // Panel 1
         <!-- 完整的面板結構已在 simple-panels.html 中定義 -->
     </div>
     
-    <!-- 🆕 使用統一的 AppController -->
+    <!-- 使用統一的 AppController -->
     <script type="module" src="src/js/AppController.js"></script>
 </body>
 </html>
@@ -516,7 +446,7 @@ file:///path/to/simple-panels.html
 http://localhost:8080/simple-panels.html
 ```
 
-### 🎨 自定義配置 (重構後)
+### 🎨 自定義配置
 
 1. **修改預設配置**
 ```javascript
@@ -547,7 +477,7 @@ panel2Themes: {
     <option value="map">地圖</option>
     <option value="PID">圖譜</option>
     <option value="surround">環景</option>
-    <option value="newType">新類型</option>  <!-- 🆕 新增 -->
+    <option value="newType">新類型</option>  <!-- 新增 -->
 </select>
 ```
 
@@ -674,25 +604,28 @@ location.reload();
 
 ### 📱 移動設備優化
 
-```css
-/* 在自定義 CSS 中添加 */
-@media (max-width: 768px) {
-    /* 移動設備上隱藏輔助面板 */
-    #panel2 {
-        display: none !important;
-    }
+系統已內建手機響應式支援，自動偵測設備類型並調整佈局：
+
+```javascript
+// 手機版功能會自動啟用，您也可以手動控制
+if (window.MobileUtils) {
+    // 檢查當前是否為手機
+    console.log('是否為手機:', window.MobileUtils.isMobile());
     
-    /* 主面板佔滿寬度 */
-    #panel1 {
-        width: 100% !important;
-    }
+    // 手動切換到手機版佈局
+    window.MobileUtils.applyMobileLayout();
     
-    /* 隱藏分隔線 */
-    #resizer {
-        display: none !important;
-    }
+    // 恢復桌面版佈局
+    window.MobileUtils.restoreDesktopLayout();
 }
 ```
+
+**手機版特色:**
+- 🔄 **自動偵測** - 根據螢幕寬度、User Agent 和觸控支援自動判斷
+- 📱 **單面板顯示** - 手機版只顯示 Panel 1，佔滿 100% 寬度
+- 🚫 **隱藏按鈕** - 自動隱藏輔助面板相關按鈕
+- 🎨 **CSS 響應式** - 完整的手機版 CSS 樣式優化
+- 🔄 **動態切換** - 螢幕旋轉或視窗大小變化時自動調整
 
 ### 🔌 整合外部庫
 
@@ -799,18 +732,21 @@ localStorage.removeItem('panelLayoutState');
 - **依賴注入**: 通過建構函數傳遞依賴關係
 - **事件驅動**: 使用自定義事件進行模組間通訊
 - **錯誤隔離**: 各模組的錯誤不影響整體系統運行
+- **響應式優先**: 自動適應不同設備和螢幕尺寸
 
 ### 🔄 擴展指南
 1. **添加新功能**: 創建新的工具模組
 2. **修改行為**: 修改對應的處理器模組
-3. **調整 UI**: 修改 uiRenderer.js 或 CSS 檔案
+3. **調整 UI**: 修改 PanelController.js 或 CSS 檔案
 4. **更改配置**: 修改 config.js 中的設定
+5. **添加響應式功能**: 在 AppController 或 LayoutManager 中擴展
 
 ### 🧪 測試建議
 - 為每個工具類編寫單元測試
 - 測試不同瀏覽器的相容性
 - 驗證 localStorage 功能
 - 測試錯誤恢復機制
+- 測試手機和桌面版的切換功能
 
 ---
 
@@ -1041,32 +977,33 @@ function loadFallbackVersion() {
 ---
 
 *本文檔最後更新時間: 2025-09-06*
-*重構版本: v2.0 - 全新模組化架構*
+*架構版本: v2.0 - 模組化架構 + 響應式支援*
 
 ---
 
-## 📊 重構統計
+## 📊 系統特性統計
 
-### 📈 程式碼改善指標
-- **檔案數量**: 12+ → 9 個核心檔案 (-25%)
-- **程式碼行數**: ~2000 → ~1200 行 (-40%)
-- **模組耦合度**: 高耦合 → 單向依賴 (-100% 循環依賴)
-- **API 一致性**: 混合風格 → 100% ES6 模組化
-- **功能重複**: 約 30% → 0% 重複代碼
-- **測試覆蓋便利性**: 困難 → 容易 (模組化)
+### 📈 程式碼品質指標
+- **檔案數量**: 9 個核心檔案，結構清晰
+- **程式碼行數**: 約 1200 行，精簡高效
+- **模組耦合度**: 單向依賴，無循環依賴
+- **API 一致性**: 100% ES6 模組化
+- **功能重複**: 0% 重複代碼
+- **測試覆蓋便利性**: 模組化設計便於測試
 
-### 🎯 架構品質提升
+### 🎯 架構品質
 - ✅ **單一職責原則** - 每個模組功能專一
 - ✅ **開放封閉原則** - 易於擴展，無需修改現有代碼
 - ✅ **依賴反轉原則** - 高層模組不依賴低層模組
 - ✅ **介面隔離原則** - 客戶端不依賴不需要的介面
 - ✅ **最小驚訝原則** - API 設計直觀易懂
 
-### 🔧 維護性提升
+### 🔧 維護性優勢
 - **除錯便利性**: 模組化設計便於定位問題
 - **功能擴展**: 新增功能不影響現有模組
 - **程式碼閱讀**: 清晰的目錄結構和命名
 - **團隊協作**: 模組間界線明確，減少衝突
+- **響應式支援**: 自動適應各種設備
 
 ---
 
@@ -1078,6 +1015,7 @@ function loadFallbackVersion() {
 3. **事件驅動通訊** - 模組間使用自定義事件通訊
 4. **錯誤處理** - 每個模組都應妥善處理錯誤情況
 5. **狀態管理** - 統一透過 StateManager 管理持久化狀態
+6. **響應式考量** - 新功能應考慮手機版的適配
 
 ### 🔍 除錯技巧
 ```javascript
@@ -1091,7 +1029,10 @@ document.addEventListener('listDataFilterChange', console.log);
 // 3. 檢查佈局狀態
 console.table(window.LayoutManager?.getState());
 
-// 4. 強制重新初始化 (調試用)
+// 4. 檢查手機版狀態
+console.log('Mobile:', window.MobileUtils?.isMobile());
+
+// 5. 強制重新初始化 (調試用)
 if (window.appController) {
     const modules = window.appController.getModules();
     await modules.contentManager.initialize();
@@ -1103,3 +1044,4 @@ if (window.appController) {
 - **依賴注入模式**: 參考 `AppController` 的實作方式
 - **事件驅動架構**: 參考 `ContentManager` 的事件處理
 - **狀態管理模式**: 參考 `StateManager` 的設計思路
+- **響應式設計**: 參考 `AppController` 的手機版實作

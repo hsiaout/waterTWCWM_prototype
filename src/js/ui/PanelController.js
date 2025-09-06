@@ -101,8 +101,11 @@ export class PanelController {
             if (panel1WidthSpan) panel1WidthSpan.textContent = `${state.panel1.width.toFixed(1)}%`;
             if (panel2WidthSpan) panel2WidthSpan.textContent = `${state.panel2.width.toFixed(1)}%`;
 
+            // 檢查是否為手機版
+            const isMobile = window.appController?.getModules()?.isMobile || false;
+            
             // 控制輔助面板按鈕顯示
-            if (state.panel2.visible) {
+            if (state.panel2.visible || isMobile) {
                 document.querySelectorAll(".js-open-panel2-btn").forEach(btn => {
                     btn.style.display = "none";
                 });

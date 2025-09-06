@@ -211,12 +211,205 @@ body {
 
 // 響應式設計
 @media (max-width: 768px) {
+    /* 手機版基礎佈局 */
+    body {
+        font-size: 14px;
+    }
+    
+    /* 頂部導航調整 */
+    .top-nav {
+        padding: 0.5rem 0;
+        
+        .container .row .col-auto {
+            font-size: 12px;
+        }
+    }
+    
+    /* 主要導航調整 */
+    .main-header {
+        padding: 0.5rem;
+        height: auto;
+        min-height: 60px;
+        
+        .row {
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .col-auto:last-child {
+            font-size: 12px;
+        }
+        
+        .site-name {
+            font-size: 16px;
+        }
+        
+        .logo {
+            font-size: 20px;
+        }
+    }
+    
+    /* 主題選擇按鈕 */
+    .dropdown-toggle {
+        font-size: 14px;
+        padding: 0.5rem 0.75rem;
+    }
+    
+    /* 面板容器調整 */
+    #panel-wrapper {
+        flex-direction: column;
+    }
+    
+    #panel1 {
+        width: 100% !important;
+        height: 100%;
+    }
+    
+    /* 隱藏 Panel 2 和分隔線 */
+    #panel2 {
+        display: none !important;
+    }
+    
+    .resizer {
+        display: none !important;
+    }
+    
+    /* 面板控制按鈕調整 */
     .panel-controls .btn {
         padding: 2px 6px;
         font-size: 11px;
     }
     
-    .resizer {
-        width: 4px;
+    /* 隱藏輔助面板按鈕 */
+    .js-open-panel2-btn {
+        display: none !important;
+    }
+    
+    /* 面板標題調整 */
+    .panel-header {
+        padding: 0.5rem;
+        font-size: 14px;
+    }
+    
+    /* 面板內容調整 */
+    .panel-content {
+        padding: 0.5rem;
+    }
+    
+    /* 表格調整 */
+    .table {
+        font-size: 12px;
+        
+        th, td {
+            padding: 0.5rem 0.25rem;
+        }
+    }
+    
+    /* 卡片調整 */
+    .card {
+        margin-bottom: 0.5rem;
+    }
+    
+    .card-header {
+        padding: 0.5rem;
+        font-size: 14px;
+    }
+    
+    /* 篩選區域調整 */
+    .panel-filter {
+        padding: 0.5rem;
+        
+        .form-select {
+            font-size: 12px;
+            padding: 0.25rem 0.5rem;
+        }
+        
+        label {
+            font-size: 12px;
+            margin-bottom: 0.25rem;
+        }
+        
+        .row .col-auto {
+            width: 100%;
+            margin-bottom: 0.5rem;
+        }
+        
+        .form-select,
+        .form-control {
+            width: 100%;
+        }
+    }
+    
+    /* 下拉選單調整 */
+    .dropdown-menu {
+        font-size: 14px;
+        
+        .dropdown-item {
+            padding: 0.5rem 1rem;
+        }
+    }
+    
+    /* 按鈕調整 */
+    .btn-sm {
+        font-size: 12px;
+        padding: 0.25rem 0.5rem;
+    }
+    
+    /* 主內容區域調整 */
+    .main-content {
+        height: calc(100vh - 120px);
+        padding: 0.25rem;
+    }
+    
+    /* 確保內容不會超出螢幕 */
+    .panel-container {
+        max-height: calc(100vh - 140px);
+        overflow-y: auto;
+    }
+    
+    /* DataTables 響應式調整 */
+    .dataTables_wrapper {
+        font-size: 12px;
+        
+        .dataTables_length,
+        .dataTables_filter,
+        .dataTables_info,
+        .dataTables_paginate {
+            font-size: 12px;
+        }
+    }
+    
+    /* 避免水平滾動 */
+    .table-responsive {
+        overflow-x: auto;
+    }
+}
+
+/* 極小螢幕 (手機直向) */
+@media (max-width: 480px) {
+    .main-header {
+        .site-name {
+            font-size: 16px;
+        }
+        
+        .logo {
+            font-size: 20px;
+        }
+    }
+    
+    .table {
+        font-size: 11px;
+    }
+    
+    .panel-filter {
+        .row .col-auto {
+            width: 100%;
+            margin-bottom: 0.5rem;
+        }
+        
+        .form-select,
+        .form-control {
+            width: 100%;
+        }
     }
 }
