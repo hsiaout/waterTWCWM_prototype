@@ -10,7 +10,7 @@ export class EventHandler {
 	bindEvents() {
 		this.bindPanelEvents();
 		this.bindFilterEvents();
-		this.bindThemeEvents();
+		// this.bindThemeEvents();
 		this.bindKeyboardEvents();
 		this.bindWindowEvents();
 	}

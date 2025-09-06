@@ -94,21 +94,26 @@ body {
 
 }
 
+#panel1, #panel2 {
+    height: 100%;
+    overflow: hidden;
+    border-radius: 5px;
+    // 預設有過渡效果
+    transition: width 0.3s ease;
+    // 拖拽時移除過渡效果
+    &.no-transition {
+        transition: none !important;
+    }
+}
+
 .panel-container {
     display: flex;
     flex-direction: column;
     height: 100%;
     background: #fff;
     overflow: hidden;
-	border-radius: 5px;
     
-    // 預設有過渡效果
-    transition: width 0.3s ease;
     
-    // 拖拽時移除過渡效果
-    &.no-transition {
-        transition: none !important;
-    }
 }
 #panel1 {
 	border: 2px solid rgba(#4a90e2, 1);

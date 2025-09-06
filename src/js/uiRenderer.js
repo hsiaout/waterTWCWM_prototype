@@ -25,7 +25,7 @@ export class UIRenderer {
 					<div id="panel1" class="panel-container" data-panel="panel1">
 						<div class="panel-header">
 							<div class="panel-title">
-								<button class="btn btn-light" type="button" data-bs-toggle="collapse" data-bs-target="#panel1-filter" aria-expanded="false">
+								<button class="btn btn-light" type="button" data-bs-toggle="collapse" data-bs-target="#panel1Filter" aria-expanded="false">
 									<i class="fas fa-filter me-1"></i>篩選
 								</button>
 							</div>
@@ -35,7 +35,7 @@ export class UIRenderer {
 								</button>
 							</div>
 						</div>
-						<div id="panel1-filter" class="collapse panel-filter">
+						<div id="panel1Filter" class="collapse panel-filter">
 							<div class="p-2 border-bottom bg-light">
 								<div class="row g-2 align-items-center">
 									<label class="col-auto form-label text-sm">站點</label>
@@ -87,7 +87,7 @@ export class UIRenderer {
 									<option value="surround">環景</option>
 									<option value="PID">圖譜</option>
 								</select>
-								<button class="btn btn-light ms-2" type="button" data-bs-toggle="collapse" data-bs-target="#panel2-filter" aria-expanded="false">
+								<button class="btn btn-light ms-2" type="button" data-bs-toggle="collapse" data-bs-target="#panel2Filter" aria-expanded="false">
 									<i class="fas fa-filter me-1"></i>篩選
 								</button>
 							</div>
@@ -97,7 +97,7 @@ export class UIRenderer {
 								</button>
 							</div>
 						</div>
-						<div id="panel2-filter" class="collapse panel-filter">
+						<div id="panel2Filter" class="collapse panel-filter">
 							<div class="p-2 border-bottom bg-light">
 								<div class="row g-2 align-items-center">
 									<label class="col-auto form-label text-sm">站點</label>

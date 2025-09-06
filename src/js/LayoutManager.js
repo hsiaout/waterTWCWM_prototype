@@ -92,10 +92,25 @@ export class LayoutManager {
 	}
 
 	// 顯示 panel2（輔助面板）
-	showPanel2() {
+	showPanel2(options) {
+		const currentState = this.stateManager.getState();
+		let panel2Width;
+		
+		// 確保 options 存在，並檢查 useDefaultWidth 的值
+		const useDefaultWidth = options && options.useDefaultWidth === true;
+		console.log('showPanel2 called with options:', options);
+		if (useDefaultWidth) {
+			panel2Width = CONFIG.DEFAULT_WIDTH;
+		} else {
+			// 使用儲存的寬度，如果沒有則使用預設值
+			panel2Width = currentState.panel2.width || CONFIG.DEFAULT_WIDTH;
+		}
+		
+		const panel1Width = 100 - panel2Width;
+		
 		const newState = {
-			panel1: { width: CONFIG.DEFAULT_WIDTH, visible: true },
-			panel2: { width: CONFIG.DEFAULT_WIDTH, visible: true }
+			panel1: { ...currentState.panel1, width: panel1Width, visible: true },
+			panel2: { ...currentState.panel2, width: panel2Width, visible: true }
 		};
 		this.setState(newState);
 		this.updateAuxiliaryButton();
@@ -103,9 +118,10 @@ export class LayoutManager {
 
 	// 隱藏 panel2
 	hidePanel2() {
+		const currentState = this.stateManager.getState();
 		const newState = {
-			panel1: { width: 100, visible: true },
-			panel2: { width: 0, visible: false }
+			panel1: { ...currentState.panel1, width: 100, visible: true },
+			panel2: { ...currentState.panel2, width: currentState.panel2.width, visible: false }
 		};
 		this.setState(newState);
 		this.updateAuxiliaryButton();
@@ -172,6 +188,6 @@ window.LayoutManager = {
 	importState: (stateJson) => layoutManager?.importState(stateJson),
 	switchContent: (panelId, contentType) => layoutManager?.switchContent(panelId, contentType),
 	applyFilters: () => layoutManager?.applyFilters(),
-	showPanel2: () => layoutManager?.showPanel2(),
+	showPanel2: (options) => layoutManager?.showPanel2(options),
 	hidePanel2: () => layoutManager?.hidePanel2()
 };

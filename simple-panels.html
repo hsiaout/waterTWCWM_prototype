@@ -44,31 +44,31 @@
 						aria-expanded="false" style="border: 2px solid var(--primary-color)!important"><i
 							class="fa-solid fa-table me-1"></i>主題選擇</button>
 					<ul class="dropdown-menu">
-						<li><a class="dropdown-item" href="#">
+						<li><a class="dropdown-item" href="#" onclick="switchPanel1Theme('list', '供水')">
 								<div class="badge bg-primary me-1">列表</div>供水
 							</a></li>
-						<li><a class="dropdown-item" href="#">
+						<li><a class="dropdown-item" href="#" onclick="switchPanel1Theme('list', '淨水')">
 								<div class="badge bg-primary me-1">列表</div>淨水
 							</a></li>
-						<li><a class="dropdown-item" href="#">
+						<li><a class="dropdown-item" href="#" onclick="switchPanel1Theme('list', '水質')">
 								<div class="badge bg-primary me-1">列表</div>水質
 							</a></li>
-						<li><a class="dropdown-item" href="#">
+						<li><a class="dropdown-item" href="#" onclick="switchPanel1Theme('list', '分區計量')">
 								<div class="badge bg-primary me-1">列表</div>分區計量
 							</a></li>
-						<li><a class="dropdown-item" href="#">
+						<li><a class="dropdown-item" href="#" onclick="switchPanel1Theme('list', '大表計量')">
 								<div class="badge bg-primary me-1">列表</div>大表計量
 							</a></li>
 						<li>
 							<hr class="dropdown-divider">
 						</li>
-						<li><a class="dropdown-item" href="#">地圖</a></li>
-						<li><a class="dropdown-item" href="#">圖譜</a></li>
-						<li><a class="dropdown-item" href="#">環景</a></li>
+						<li><a class="dropdown-item" href="#" onclick="switchPanel1Theme('map', '地圖')">地圖</a></li>
+						<li><a class="dropdown-item" href="#" onclick="switchPanel1Theme('PID', '圖譜')">圖譜</a></li>
+						<li><a class="dropdown-item" href="#" onclick="switchPanel1Theme('surround', '環景')">環景</a></li>
 						<li>
 							<hr class="dropdown-divider">
 						</li>
-						<li><a class="dropdown-item" href="#">緊急應變圖台</a></li>
+						<li><a class="dropdown-item" href="#" onclick="switchPanel1Theme('map', '緊急應變圖台')">緊急應變圖台</a></li>
 					</ul>
 				</div>
 			</div>
@@ -79,57 +79,360 @@
 				</div>
 			</div>
 			<div class="col-auto">
-				<button class="btn btn-outline-secondary btn-sm" onclick="showCurrentState()">顯示狀態</button>
+				<span id="panel1-width">50%</span>/
+				<span id="panel2-width">50%</span>
 				<button class="btn btn-primary btn-sm" onclick="resetPanels()">重置 50:50</button>
 			</div>
 		</div>
 	</header>
 	<div class="main-content">
 		<div id="panel-wrapper">
-			<!-- Panel 1 -->
-			<div id="panel1" class="panel-container" style="width: 50%;">
-				<div class="panel-header">
-					<div class="panel-title">
-						<strong>Panel 1</strong>
+			<div id="panel1">
+				<!-- Panel 1 - List Theme -->
+				<div id="panel1-list" class="panel-container" data-theme="list">
+					<div class="panel-header">
+						<div class="panel-title">
+							<button class="btn btn-light" type="button" data-bs-toggle="collapse" data-bs-target="#panel1-list-filter" aria-expanded="false">
+								<i class="fas fa-cog me-1"></i>選項
+							</button>
+						</div>
+						<div class="panel-controls">
+							<button class="btn btn-light btn-sm js-open-panel2-btn" type="button" title="開啟輔助面板" onclick="showPanel2()">
+								<i class="fas fa-window-restore me-1"></i>輔助面板
+							</button>
+						</div>
 					</div>
-					<div class="panel-controls">
-						<button class="btn btn-outline-danger btn-sm" onclick="closePanel1()" title="關閉 Panel 1">
-							<i class="fas fa-times"></i>
-						</button>
+					<div id="panel1-list-filter" class="panel-filter collapse">
+						<div class="p-2 border-bottom bg-light">
+							<div class="row g-2 align-items-center">
+								<label class="col-auto form-label text-sm">站點</label>
+								<div class="col-auto">
+									<select class="form-select form-select-sm" id="panel1-list-station-filter">
+										<option value="">所有站點</option>
+										<option value="北區">北區</option>
+										<option value="南區">南區</option>
+										<option value="東區">東區</option>
+										<option value="西區">西區</option>
+									</select>
+								</div>
+								<label class="col-auto form-label text-sm">時間範圍</label>
+								<div class="col-auto">
+									<select class="form-select form-select-sm" id="panel1-list-time-filter">
+										<option value="">所有時間</option>
+										<option value="today">今天</option>
+										<option value="week">本週</option>
+										<option value="month">本月</option>
+									</select>
+								</div>
+								<label class="col-auto form-label text-sm">狀態</label>
+								<div class="col-auto">
+									<select class="form-select form-select-sm" id="panel1-list-status-filter">
+										<option value="">所有狀態</option>
+										<option value="normal">正常</option>
+										<option value="warning">警告</option>
+										<option value="error">錯誤</option>
+									</select>
+								</div>
+							</div>
+						</div>
 					</div>
+					<div id="panel1-list-content" class="panel-content"></div>
 				</div>
-				<div class="panel-content">
-					<div class="p-3">
-						<strong>面板資訊：</strong><br>
-						寬度: <span id="panel1-width">50%</span><br>
-						狀態: 顯示中
+	
+				<!-- Panel 1 - Map Theme -->
+				<div id="panel1-map" class="panel-container" data-theme="map" style="display: none;">
+					<div class="panel-header">
+						<div class="panel-title">
+							<button class="btn btn-light" type="button" data-bs-toggle="collapse" data-bs-target="#panel1-map-filter" aria-expanded="false">
+								<i class="fas fa-cog me-1"></i>選項
+							</button>
+						</div>
+						<div class="panel-controls">
+							<button class="btn btn-light btn-sm js-open-panel2-btn" type="button" title="開啟輔助面板" onclick="showPanel2()">
+								<i class="fas fa-window-restore me-1"></i>輔助面板
+							</button>
+						</div>
 					</div>
+					<div id="panel1-map-filter" class="panel-filter collapse">
+						<div class="p-2 border-bottom bg-light">
+							<div class="row g-2 align-items-center">
+								<label class="col-auto form-label text-sm">圖層</label>
+								<div class="col-auto">
+									<select class="form-select form-select-sm" id="panel1-map-layer-filter">
+										<option value="">所有圖層</option>
+										<option value="water">供水設施</option>
+										<option value="pipe">管線</option>
+										<option value="station">監測站</option>
+									</select>
+								</div>
+								<label class="col-auto form-label text-sm">區域</label>
+								<div class="col-auto">
+									<select class="form-select form-select-sm" id="panel1-map-area-filter">
+										<option value="">所有區域</option>
+										<option value="north">北區</option>
+										<option value="south">南區</option>
+										<option value="east">東區</option>
+										<option value="west">西區</option>
+									</select>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div id="panel1-map-content" class="panel-content"></div>
+				</div>
+	
+				<!-- Panel 1 - PID Theme -->
+				<div id="panel1-PID" class="panel-container" data-theme="PID" style="display: none;">
+					<div class="panel-header">
+						<div class="panel-title">
+							<button class="btn btn-light" type="button" data-bs-toggle="collapse" data-bs-target="#panel1-PID-filter" aria-expanded="false">
+								<i class="fas fa-cog me-1"></i>選項
+							</button>
+						</div>
+						<div class="panel-controls">
+							<button class="btn btn-light btn-sm js-open-panel2-btn" type="button" title="開啟輔助面板" onclick="showPanel2()">
+								<i class="fas fa-window-restore me-1"></i>輔助面板
+							</button>
+						</div>
+					</div>
+					<div id="panel1-PID-filter" class="panel-filter collapse">
+						<div class="p-2 border-bottom bg-light">
+							<div class="row g-2 align-items-center">
+								<label class="col-auto form-label text-sm">圖譜類型</label>
+								<div class="col-auto">
+									<select class="form-select form-select-sm" id="panel1-PID-type-filter">
+										<option value="">所有類型</option>
+										<option value="flow">流程圖</option>
+										<option value="network">網路圖</option>
+										<option value="system">系統圖</option>
+									</select>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div id="panel1-PID-content" class="panel-content"></div>
+				</div>
+	
+				<!-- Panel 1 - Surround Theme -->
+				<div id="panel1-surround" class="panel-container" data-theme="surround" style="display: none;">
+					<div class="panel-header">
+						<div class="panel-title">
+							<button class="btn btn-light" type="button" data-bs-toggle="collapse" data-bs-target="#panel1-surround-filter" aria-expanded="false">
+								<i class="fas fa-cog me-1"></i>選項
+							</button>
+						</div>
+						<div class="panel-controls">
+							<button class="btn btn-light btn-sm js-open-panel2-btn" type="button" title="開啟輔助面板" onclick="showPanel2()">
+								<i class="fas fa-window-restore me-1"></i>輔助面板
+							</button>
+						</div>
+					</div>
+					<div id="panel1-surround-filter" class="panel-filter collapse">
+						<div class="p-2 border-bottom bg-light">
+							<div class="row g-2 align-items-center">
+								<label class="col-auto form-label text-sm">視點</label>
+								<div class="col-auto">
+									<select class="form-select form-select-sm" id="panel1-surround-viewpoint-filter">
+										<option value="">所有視點</option>
+										<option value="station1">監測站1</option>
+										<option value="station2">監測站2</option>
+										<option value="station3">監測站3</option>
+									</select>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div id="panel1-surround-content" class="panel-content"></div>
 				</div>
 			</div>
-			
 			<!-- Resizer -->
 			<div id="resizer" class="resizer">
 				<div class="resizer-line"></div>
 			</div>
 			
-			<!-- Panel 2 -->
-			<div id="panel2" class="panel-container" style="width: 50%;">
-				<div class="panel-header">
-					<div class="panel-title">
-						<strong>Panel 2</strong>
+			<div id="panel2">
+				<!-- Panel 2 - List Theme -->
+				<div id="panel2-list" class="panel-container" data-theme="list" style="display: none;">
+					<div class="panel-header">
+						<div class="panel-title">
+							輔助視窗：
+							<select class="form-select form-select-sm theme-selector ms-2" id="panel2-theme-selector-list" onchange="showTheme('panel2', this.value)" style="width: auto;">
+								<option value="list" selected>列表</option>
+								<option value="map">地圖</option>
+								<option value="PID">圖譜</option>
+								<option value="surround">環景</option>
+							</select>
+							<button class="btn btn-light ms-2" type="button" data-bs-toggle="collapse" data-bs-target="#panel2-list-filter" aria-expanded="false">
+								<i class="fas fa-cog me-1"></i>選項
+							</button>
+						</div>
+						<div class="panel-controls">
+							<button class="btn btn-light btn-sm" type="button" title="隱藏輔助面板" onclick="closePanel2()">
+								<i class="fas fa-chevron-right me-1"></i>隱藏
+							</button>
+						</div>
 					</div>
-					<div class="panel-controls">
-						<button class="btn btn-outline-danger btn-sm" onclick="closePanel2()" title="關閉 Panel 2">
-							<i class="fas fa-times"></i>
-						</button>
+					<div id="panel2-list-filter" class="panel-filter collapse">
+						<div class="p-2 border-bottom bg-light">
+							<div class="row g-2 align-items-center">
+								<label class="col-auto form-label text-sm">站點</label>
+								<div class="col-auto">
+									<select class="form-select form-select-sm" id="panel2-list-station-filter">
+										<option value="">所有站點</option>
+										<option value="北區">北區</option>
+										<option value="南區">南區</option>
+										<option value="東區">東區</option>
+										<option value="西區">西區</option>
+									</select>
+								</div>
+								<label class="col-auto form-label text-sm">時間範圍</label>
+								<div class="col-auto">
+									<select class="form-select form-select-sm" id="panel2-list-time-filter">
+										<option value="">所有時間</option>
+										<option value="today">今天</option>
+										<option value="week">本週</option>
+										<option value="month">本月</option>
+									</select>
+								</div>
+								<label class="col-auto form-label text-sm">狀態</label>
+								<div class="col-auto">
+									<select class="form-select form-select-sm" id="panel2-list-status-filter">
+										<option value="">所有狀態</option>
+										<option value="normal">正常</option>
+										<option value="warning">警告</option>
+										<option value="error">錯誤</option>
+									</select>
+								</div>
+							</div>
+						</div>
 					</div>
+					<div id="panel2-list-content" class="panel-content"></div>
 				</div>
-				<div class="panel-content">
-					<div class="p-3">
-						<strong>面板資訊：</strong><br>
-						寬度: <span id="panel2-width">50%</span><br>
-						狀態: 顯示中
+	
+				<!-- Panel 2 - Map Theme -->
+				<div id="panel2-map" class="panel-container" data-theme="map">
+					<div class="panel-header">
+						<div class="panel-title">
+							輔助視窗：
+							<select class="form-select form-select-sm theme-selector ms-2" id="panel2-theme-selector-map" onchange="showTheme('panel2', this.value)" style="width: auto;">
+								<option value="list">列表</option>
+								<option value="map" selected>地圖</option>
+								<option value="PID">圖譜</option>
+								<option value="surround">環景</option>
+							</select>
+							<button class="btn btn-light ms-2" type="button" data-bs-toggle="collapse" data-bs-target="#panel2-map-filter" aria-expanded="false">
+								<i class="fas fa-cog me-1"></i>選項
+							</button>
+						</div>
+						<div class="panel-controls">
+							<button class="btn btn-light btn-sm" type="button" title="隱藏輔助面板" onclick="closePanel2()">
+								<i class="fas fa-chevron-right me-1"></i>隱藏
+							</button>
+						</div>
 					</div>
+					<div id="panel2-map-filter" class="panel-filter collapse">
+						<div class="p-2 border-bottom bg-light">
+							<div class="row g-2 align-items-center">
+								<label class="col-auto form-label text-sm">圖層</label>
+								<div class="col-auto">
+									<select class="form-select form-select-sm" id="panel2-map-layer-filter">
+										<option value="">所有圖層</option>
+										<option value="water">供水設施</option>
+										<option value="pipe">管線</option>
+										<option value="station">監測站</option>
+									</select>
+								</div>
+								<label class="col-auto form-label text-sm">區域</label>
+								<div class="col-auto">
+									<select class="form-select form-select-sm" id="panel2-map-area-filter">
+										<option value="">所有區域</option>
+										<option value="north">北區</option>
+										<option value="south">南區</option>
+										<option value="east">東區</option>
+										<option value="west">西區</option>
+									</select>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div id="panel2-map-content" class="panel-content"></div>
+				</div>
+	
+				<!-- Panel 2 - PID Theme -->
+				<div id="panel2-PID" class="panel-container" data-theme="PID" style="display: none;">
+					<div class="panel-header">
+						<div class="panel-title">
+							輔助視窗：
+							<select class="form-select form-select-sm theme-selector ms-2" id="panel2-theme-selector-PID" onchange="showTheme('panel2', this.value)" style="width: auto;">
+								<option value="list">列表</option>
+								<option value="map">地圖</option>
+								<option value="PID" selected>圖譜</option>
+								<option value="surround">環景</option>
+							</select>
+							<button class="btn btn-light ms-2" type="button" data-bs-toggle="collapse" data-bs-target="#panel2-PID-filter" aria-expanded="false">
+								<i class="fas fa-cog me-1"></i>選項
+							</button>
+						</div>
+						<div class="panel-controls">
+							<button class="btn btn-light btn-sm" type="button" title="隱藏輔助面板" onclick="closePanel2()">
+								<i class="fas fa-chevron-right me-1"></i>隱藏
+							</button>
+						</div>
+					</div>
+					<div id="panel2-PID-filter" class="panel-filter collapse">
+						<div class="p-2 border-bottom bg-light">
+							<div class="row g-2 align-items-center">
+								<label class="col-auto form-label text-sm">圖譜類型</label>
+								<div class="col-auto">
+									<select class="form-select form-select-sm" id="panel2-PID-type-filter">
+										<option value="">所有類型</option>
+										<option value="flow">流程圖</option>
+										<option value="network">網路圖</option>
+										<option value="system">系統圖</option>
+									</select>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div id="panel2-PID-content" class="panel-content"></div>
+				</div>
+				<!-- Panel 2 - Surround Theme -->
+				<div id="panel2-surround" class="panel-container" data-theme="surround" style="display: none;">
+					<div class="panel-header">
+						<div class="panel-title">
+							輔助視窗：
+							<select class="form-select form-select-sm theme-selector ms-2" id="panel2-theme-selector-surround" onchange="showTheme('panel2', this.value)" style="width: auto;">
+								<option value="list">列表</option>
+								<option value="map">地圖</option>
+								<option value="PID">圖譜</option>
+								<option value="surround" selected>環景</option>
+							</select>
+							<button class="btn btn-light ms-2" type="button" data-bs-toggle="collapse" data-bs-target="#panel2-surround-filter" aria-expanded="false">
+								<i class="fas fa-cog me-1"></i>選項
+							</button>
+						</div>
+						<div class="panel-controls">
+							<button class="btn btn-light btn-sm" type="button" title="隱藏輔助面板" onclick="closePanel2()">
+								<i class="fas fa-chevron-right me-1"></i>隱藏
+							</button>
+						</div>
+					</div>
+					<div id="panel2-surround-filter" class="panel-filter collapse">
+						<div class="p-2 border-bottom bg-light">
+							<div class="row g-2 align-items-center">
+								<label class="col-auto form-label text-sm">視點</label>
+								<div class="col-auto">
+									<select class="form-select form-select-sm" id="panel2-surround-viewpoint-filter">
+										<option value="">所有視點</option>
+										<option value="station1">監測站1</option>
+										<option value="station2">監測站2</option>
+										<option value="station3">監測站3</option>
+									</select>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div id="panel2-surround-content" class="panel-content"></div>
 				</div>
 			</div>
 		</div>
@@ -143,7 +446,6 @@
 	<script src="https://cdn.datatables.net/fixedcolumns/5.0.4/js/fixedColumns.bootstrap5.min.js"></script>
 	<link rel="stylesheet" href="https://cdn.datatables.net/2.3.3/css/dataTables.bootstrap5.min.css">
 	<link rel="stylesheet" href="https://cdn.datatables.net/fixedcolumns/5.0.4/css/fixedColumns.bootstrap5.min.css">
-	<script type="module" src="src/js/layout-modular.js"></script>
     <script type="module">
         // 直接使用既有的 LayoutManager - 完全不寫新程式碼
         import { LayoutManager } from './src/js/LayoutManager.js';
@@ -155,12 +457,7 @@
         window.resetPanels = function() {
             if (layoutManager) {
                 layoutManager.resetLayout();
-            }
-        };
-        
-        window.closePanel1 = function() {
-            if (layoutManager) {
-                layoutManager.togglePanel('panel1');
+				updateWidthDisplay();
             }
         };
         
@@ -169,23 +466,61 @@
                 layoutManager.togglePanel('panel2');
             }
         };
-        
-        window.showCurrentState = function() {
-            if (layoutManager) {
-                const state = layoutManager.getState();
-                alert(`目前狀態:\nPanel 1: ${state.panel1.width.toFixed(1)}%, visible: ${state.panel1.visible}\nPanel 2: ${state.panel2.width.toFixed(1)}%, visible: ${state.panel2.visible}`);
-            }
-        };
-        
+
+		window.showPanel2 = function() {
+			if (layoutManager) {
+				layoutManager.showPanel2({useDefaultWidth: false});
+			}
+		};
+
+		// 主題切換函數（僅用於 Panel 2）
+		window.showTheme = function(panelId, theme) {
+			// 隱藏指定面板的所有主題容器
+			const allThemes = ['list', 'map', 'PID', 'surround'];
+			
+			allThemes.forEach(themeName => {
+				const container = document.getElementById(`${panelId}-${themeName}`);
+				if (container) {
+					container.style.display = 'none';
+				}
+			});
+			
+			// 顯示選中的主題容器
+			const targetContainer = document.getElementById(`${panelId}-${theme}`);
+			if (targetContainer) {
+				targetContainer.style.display = 'flex';
+			}
+			
+			// 更新所有主題選擇器的值
+			allThemes.forEach(themeName => {
+				const themeSelector = document.getElementById(`${panelId}-theme-selector-${themeName}`);
+				if (themeSelector) {
+					themeSelector.value = theme;
+				}
+			});
+			
+			console.log(`✓ 切換 ${panelId} 到 ${theme} 主題`);
+		};
+
         // 自定義的面板寬度顯示更新函數
         function updateWidthDisplay() {
             if (layoutManager) {
                 const state = layoutManager.getState();
                 const panel1WidthSpan = document.getElementById('panel1-width');
                 const panel2WidthSpan = document.getElementById('panel2-width');
-                
-                if (panel1WidthSpan) panel1WidthSpan.textContent = state.panel1.width.toFixed(1) + '%';
-                if (panel2WidthSpan) panel2WidthSpan.textContent = state.panel2.width.toFixed(1) + '%';
+
+                if (panel1WidthSpan) panel1WidthSpan.textContent = state.panel1.width.toFixed(1) + '%,' + state.panel1.visible;
+                if (panel2WidthSpan) panel2WidthSpan.textContent = state.panel2.width.toFixed(1) + '%,' + state.panel2.visible;
+
+				if(state.panel2.visible){
+					document.querySelectorAll(".js-open-panel2-btn").forEach(btn => {
+						btn.style.display = "none";
+					});
+				}else{
+					document.querySelectorAll(".js-open-panel2-btn").forEach(btn => {
+						btn.style.display = "inline-block";
+					});
+				}
             }
         }
         
@@ -208,8 +543,13 @@
                 return result;
             };
             
-            console.log('簡單雙面板拖拽介面已初始化 (直接使用 LayoutManager.js)');
+            // 設置默認主題
+            switchPanel1Theme('list', '供水');
+            if (document.getElementById('panel2').style.display !== 'none') {
+                showTheme('panel2', 'map');
+            }
         });
     </script>
+	<script src="src/js/layout.js"></script>
 </body>
 </html>
