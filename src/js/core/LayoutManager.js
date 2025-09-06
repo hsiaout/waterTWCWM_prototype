@@ -1,32 +1,25 @@
-import { CONFIG } from './config.js';
-import { StateManager } from './utils/stateManager.js';
-import { ContentLoader } from './utils/contentLoader.js';
-import { DragHandler } from './utils/dragHandler.js';
-import { EventHandler } from './utils/eventHandler.js';
-import { UIRenderer } from './uiRenderer.js';
+import { CONFIG } from '../config.js';
+import { StateManager } from '../utils/stateManager.js';
+import { DragHandler } from '../utils/dragHandler.js';
 
 // 主要佈局管理器
 export class LayoutManager {
 	constructor() {
 		// 初始化所有管理器
 		this.stateManager = new StateManager();
-		this.contentLoader = new ContentLoader();
 		this.dragHandler = new DragHandler(this);
-		this.eventHandler = new EventHandler(this);
 	}
 
 	// 初始化佈局
 	async init(options = { skipContentLoad: false }) {
-		// 創建 UI 結構（如果需要）
-		UIRenderer.createLayout();
-		
-		// 如果指定跳過內容載入，則不載入內容
-		if (!options.skipContentLoad) {
-			await this.contentLoader.loadPanelContents();
+		// simple-panels.html 已有完整結構，檢查是否存在
+		const existingWrapper = document.querySelector('#panel-wrapper');
+		if (!existingWrapper) {
+			console.error('未找到 #panel-wrapper，請確保使用 simple-panels.html');
+			return false;
 		}
 		
 		// 綁定事件
-		this.eventHandler.bindEvents();
 		this.dragHandler.bindDragEvents();
 		
 		// 應用初始狀態
@@ -39,8 +32,43 @@ export class LayoutManager {
 	// 應用狀態
 	applyState() {
 		const state = this.stateManager.getState();
-		UIRenderer.applyVisualState(state);
-		UIRenderer.updateButtons(state);
+		this.applyVisualState(state);
+	}
+
+	// 應用視覺狀態（內嵌核心功能）
+	applyVisualState(state) {
+		const panel1 = document.querySelector('#panel1');
+		const panel2 = document.querySelector('#panel2');
+		const resizer = document.querySelector('#resizer');
+
+		if (!panel1 || !panel2 || !resizer) {
+			console.warn('Required elements not available for state application');
+			return false;
+		}
+		
+		// 應用面板寬度和可見性
+		if (state.panel1.visible) {
+			panel1.style.width = state.panel1.width + '%';
+			panel1.classList.remove('panel-hidden');
+		} else {
+			panel1.classList.add('panel-hidden');
+		}
+		
+		if (state.panel2.visible) {
+			panel2.style.width = state.panel2.width + '%';
+			panel2.classList.remove('panel-hidden');
+		} else {
+			panel2.classList.add('panel-hidden');
+		}
+		
+		// 控制分隔線的顯示
+		if (!state.panel1.visible || !state.panel2.visible) {
+			resizer.classList.add('resizer-hidden');
+		} else {
+			resizer.classList.remove('resizer-hidden');
+		}
+		
+		return true;
 	}
 
 	// 切換面板顯示/隱藏
@@ -129,8 +157,8 @@ export class LayoutManager {
 
 	// 更新輔助面板按鈕
 	updateAuxiliaryButton() {
-		const state = this.stateManager.getState();
-		UIRenderer.updateAuxiliaryButton(state);
+		// simple-panels.html 的按鈕邏輯由 updateWidthDisplay 處理
+		// 這裡保留空實現以避免錯誤
 	}
 
 	// 公共 API 方法
@@ -158,36 +186,6 @@ export class LayoutManager {
 		}
 		return false;
 	}
-
-	switchContent(panelId, contentType) {
-		return this.contentLoader.switchContent(panelId, contentType);
-	}
-
-	applyFilters() {
-		this.eventHandler.applyFilters();
-	}
 }
 
-// 全域佈局管理器實例
-let layoutManager;
-
-// 初始化
-document.addEventListener("DOMContentLoaded", async () => {
-	layoutManager = new LayoutManager();
-	await layoutManager.init();
-});
-
-// 匯出公共方法供外部使用
-window.LayoutManager = {
-	setState: (state) => layoutManager?.setState(state),
-	getState: () => layoutManager?.getState(),
-	resetLayout: () => layoutManager?.resetLayout(),
-	togglePanel: (panelId) => layoutManager?.togglePanel(panelId),
-	maximizePanel: (panelId) => layoutManager?.maximizePanel(panelId),
-	exportState: () => layoutManager?.exportState(),
-	importState: (stateJson) => layoutManager?.importState(stateJson),
-	switchContent: (panelId, contentType) => layoutManager?.switchContent(panelId, contentType),
-	applyFilters: () => layoutManager?.applyFilters(),
-	showPanel2: (options) => layoutManager?.showPanel2(options),
-	hidePanel2: () => layoutManager?.hidePanel2()
-};
+// LayoutManager 現在由 AppController 統一管理，不再自動初始化

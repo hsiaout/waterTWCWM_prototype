@@ -28,17 +28,3 @@ export const CONFIG = {
 		panel2: { width: 50, visible: true }
 	}
 };
-
-// 面板配置
-export const PANELS = [
-	{
-		id: "panel1",
-		html: "./src/page/list.html",
-		js: "./src/page/list.js",
-	},
-	{
-		id: "panel2",
-		html: "./src/page/map.html",
-		js: "",
-	},
-];

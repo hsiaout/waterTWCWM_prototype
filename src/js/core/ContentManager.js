@@ -1,14 +1,14 @@
 /**
- * Layout Manager - 處理頁面內容載入和主題切換
- * 負責管理雙面板系統的內容載入、主題切換和腳本管理
+ * ContentManager - 內容載入與主題管理
+ * 負責管理頁面內容載入、主題切換和腳本管理
  */
-(function() {
-    'use strict';
-    
-    console.log('Layout Manager 開始初始化...');
-    
-    // ===== 私有變數 =====
-    const loadedScripts = new Set(); // 追蹤已載入的腳本，避免重複載入
+export class ContentManager {
+    constructor() {
+        this.loadedScripts = new Set(); // 追蹤已載入的腳本，避免重複載入
+        this.initialized = false;
+        
+        console.log('ContentManager 初始化...');
+    }
 
     // ===== 核心功能函數 =====
 
@@ -17,7 +17,7 @@
      * @param {Object|string} fileConfig - 檔案配置物件或 HTML 檔案路徑
      * @param {string} targetElementId - 目標元素 ID
      */
-    async function loadContent(fileConfig, targetElementId) {
+    async loadContent(fileConfig, targetElementId) {
         try {
             // 向下相容：字串轉換為物件格式
             if (typeof fileConfig === 'string') {
@@ -45,11 +45,11 @@
 
             // 載入對應的 JavaScript 檔案
             if (jsUrl) {
-                await loadScript(jsUrl, targetElementId);
+                await this.loadScript(jsUrl, targetElementId);
             }
 
             // 執行載入內容中的腳本
-            initializeLoadedContent(targetElementId);
+            this.initializeLoadedContent(targetElementId);
 
         } catch (error) {
             console.error(`載入內容失敗:`, error);
@@ -70,12 +70,12 @@
      * @param {string} scriptUrl - 腳本檔案路徑
      * @param {string} contextId - 載入上下文 ID
      */
-    async function loadScript(scriptUrl, contextId) {
+    async loadScript(scriptUrl, contextId) {
         try {
             console.log(`載入腳本: ${scriptUrl} (用於 ${contextId})`);
 
             // 檢查是否已經載入過
-            if (loadedScripts.has(scriptUrl)) {
+            if (this.loadedScripts.has(scriptUrl)) {
                 console.log(`腳本 ${scriptUrl} 已存在，跳過重複載入`);
                 return;
             }
@@ -101,7 +101,7 @@
             script.textContent = scriptContent;
 
             document.head.appendChild(script);
-            loadedScripts.add(scriptUrl);
+            this.loadedScripts.add(scriptUrl);
 
             console.log(`✓ 成功載入腳本: ${scriptUrl}`);
 
@@ -114,7 +114,7 @@
      * 初始化載入內容中的腳本
      * @param {string} elementId - 容器元素 ID
      */
-    function initializeLoadedContent(elementId) {
+    initializeLoadedContent(elementId) {
         const element = document.getElementById(elementId);
         if (!element) return;
 
@@ -136,115 +136,87 @@
         });
     }
 
-    // ===== 配置物件 =====
+    // ===== 配置管理 =====
     
     /**
-     * Panel 2 主題對應的檔案路徑配置
+     * 獲取主題配置
      */
-    const themeFiles = {
-        list: {
-            html: 'src/page/list2.html',
-            js: 'src/page/list2.js'
-        },
-        map: {
-            html: 'src/page/map.html',
-            js: null
-        },
-        surround: {
-            html: 'src/page/surround.html',
-            js: null
-        },
-        PID: {
-            html: 'src/page/PID.html',
-            js: null
-        }
-    };
-
-    /**
-     * Panel 1 主導航對應的檔案路徑配置
-     */
-    const mainNavFiles = {
-        // 列表類型主題 - 使用相同的 list.html，只有資料篩選不同
-        listThemes: {
-            '供水': { dataType: 'water_supply' },
-            '淨水': { dataType: 'water_treatment' },
-            '水質': { dataType: 'water_quality' },
-            '分區計量': { dataType: 'zone_metering' },
-            '大表計量': { dataType: 'main_metering' }
-        },
-        // 其他類型主題 - 使用不同的 HTML 檔案
-        otherThemes: {
-            '地圖': {
-                html: 'src/page/map.html',
-                js: null
+    getThemeConfigs() {
+        return {
+            // Panel 2 主題對應的檔案路徑配置
+            panel2Themes: {
+                list: {
+                    html: 'src/page/list2.html',
+                    js: 'src/page/list2.js'
+                },
+                map: {
+                    html: 'src/page/map.html',
+                    js: null
+                },
+                surround: {
+                    html: 'src/page/surround.html',
+                    js: null
+                },
+                PID: {
+                    html: 'src/page/PID.html',
+                    js: null
+                }
             },
-            '圖譜': {
-                html: 'src/page/PID.html',
-                js: null
-            },
-            '環景': {
-                html: 'src/page/surround.html',
-                js: null
-            },
-            '緊急應變圖台': {
-                html: 'src/page/map.html',
-                js: null
+            
+            // Panel 1 主導航對應的檔案路徑配置
+            panel1Themes: {
+                // 列表類型主題 - 使用相同的 list.html，只有資料篩選不同
+                listThemes: {
+                    '供水': { dataType: 'water_supply' },
+                    '淨水': { dataType: 'water_treatment' },
+                    '水質': { dataType: 'water_quality' },
+                    '分區計量': { dataType: 'zone_metering' },
+                    '大表計量': { dataType: 'main_metering' }
+                },
+                
+                // 其他類型主題 - 使用不同的 HTML 檔案
+                otherThemes: {
+                    '地圖': {
+                        html: 'src/page/map.html',
+                        js: null
+                    },
+                    '圖譜': {
+                        html: 'src/page/PID.html',
+                        js: null
+                    },
+                    '環景': {
+                        html: 'src/page/surround.html',
+                        js: null
+                    },
+                    '緊急應變圖台': {
+                        html: 'src/page/map.html',
+                        js: null
+                    }
+                },
+                
+                // 基礎模板配置
+                templates: {
+                    list: {
+                        html: 'src/page/list.html',
+                        js: 'src/page/list.js'
+                    }
+                }
             }
-        },
-        // 基礎模板配置
-        templates: {
-            list: {
-                html: 'src/page/list.html',
-                js: 'src/page/list.js'
-            }
-        }
-    };
-
-    // ===== 初始化和事件綁定 =====
-
-    /**
-     * 預載所有主題內容
-     */
-    async function preloadAllThemes() {
-        console.log('開始預載所有主題內容...');
-        
-        const loadPromises = [];
-        
-        // 預載 Panel 1 - List 主題內容（只載入一次）
-        const listContentId = 'panel1-list-content';
-        loadPromises.push(loadContent(mainNavFiles.templates.list, listContentId));
-        
-        // 預載 Panel 1 - 其他主題內容
-        Object.entries(mainNavFiles.otherThemes).forEach(([themeName, config]) => {
-            const themeType = getThemeTypeByName(themeName);
-            if (themeType && themeType !== 'list') {
-                const contentId = `panel1-${themeType}-content`;
-                loadPromises.push(loadContent(config, contentId));
-            }
-        });
-        
-        // 預載 Panel 2 所有主題內容
-        Object.entries(themeFiles).forEach(([theme, config]) => {
-            const contentId = `panel2-${theme}-content`;
-            loadPromises.push(loadContent(config, contentId));
-        });
-        
-        try {
-            await Promise.all(loadPromises);
-            console.log('✓ 所有主題內容預載完成');
-        } catch (error) {
-            console.warn('部分內容預載失敗:', error);
-        }
+        };
     }
+
+    // ===== 主題管理 =====
 
     /**
      * 根據主題名稱獲取主題類型
      * @param {string} themeName - 主題名稱
      * @returns {string|null} 主題類型
      */
-    function getThemeTypeByName(themeName) {
+    getThemeTypeByName(themeName) {
+        const configs = this.getThemeConfigs();
+        
         // 列表類型主題都對應到 'list'
-        if (mainNavFiles.listThemes[themeName]) {
+        if (configs.panel1Themes.listThemes[themeName]) {
             return 'list';
         }
         
@@ -264,17 +236,19 @@
      * @param {string} themeType - 主題類型
      * @returns {Object|null} 主題配置
      */
-    function getThemeConfig(themeType) {
+    getThemeConfig(themeType) {
+        const configs = this.getThemeConfigs();
+        
         // 列表類型使用統一的 list 模板
         if (themeType === 'list') {
-            return mainNavFiles.templates.list;
+            return configs.panel1Themes.templates.list;
         }
         
         // 其他主題類型
         const themeMapping = {
-            'map': mainNavFiles.otherThemes['地圖'],
-            'PID': mainNavFiles.otherThemes['圖譜'],
-            'surround': mainNavFiles.otherThemes['環景']
+            'map': configs.panel1Themes.otherThemes['地圖'],
+            'PID': configs.panel1Themes.otherThemes['圖譜'],
+            'surround': configs.panel1Themes.otherThemes['環景']
         };
         
         return themeMapping[themeType] || null;
@@ -285,30 +259,57 @@
      * @param {string} themeLabel - 主題標籤
      * @returns {string|null} 資料類型
      */
-    function getDataTypeByLabel(themeLabel) {
-        return mainNavFiles.listThemes[themeLabel]?.dataType || null;
+    getDataTypeByLabel(themeLabel) {
+        const configs = this.getThemeConfigs();
+        return configs.panel1Themes.listThemes[themeLabel]?.dataType || null;
     }
+
+    // ===== 預載功能 =====
 
     /**
-     * 主初始化函數
+     * 預載所有主題內容
      */
-    async function initialize() {
-        console.log('Layout Manager 主初始化開始');
+    async preloadAllThemes() {
+        console.log('開始預載所有主題內容...');
         
-        // 預載所有內容
-        await preloadAllThemes();
+        const configs = this.getThemeConfigs();
+        const loadPromises = [];
         
-        console.log('✓ Layout Manager 初始化完成');
+        // 預載 Panel 1 - List 主題內容（只載入一次）
+        const listContentId = 'panel1-list-content';
+        loadPromises.push(this.loadContent(configs.panel1Themes.templates.list, listContentId));
+        
+        // 預載 Panel 1 - 其他主題內容
+        Object.entries(configs.panel1Themes.otherThemes).forEach(([themeName, config]) => {
+            const themeType = this.getThemeTypeByName(themeName);
+            if (themeType && themeType !== 'list') {
+                const contentId = `panel1-${themeType}-content`;
+                loadPromises.push(this.loadContent(config, contentId));
+            }
+        });
+        
+        // 預載 Panel 2 所有主題內容
+        Object.entries(configs.panel2Themes).forEach(([theme, config]) => {
+            const contentId = `panel2-${theme}-content`;
+            loadPromises.push(this.loadContent(config, contentId));
+        });
+        
+        try {
+            await Promise.all(loadPromises);
+            console.log('✓ 所有主題內容預載完成');
+        } catch (error) {
+            console.warn('部分內容預載失敗:', error);
+        }
     }
 
-    // ===== 全域 API 和函數 =====
+    // ===== 主題切換 =====
 
     /**
      * Panel 1 主題切換函數（供主導航使用）
      * @param {string} themeType - 主題類型 (list, map, PID, surround)
      * @param {string} themeLabel - 主題標籤（用於識別點擊的選項）
      */
-    function switchPanel1Theme(themeType, themeLabel) {
+    switchPanel1Theme(themeType, themeLabel) {
         console.log(`主導航主題切換: ${themeType}, ${themeLabel}`);
 
         // 隱藏所有 Panel 1 容器
@@ -325,9 +326,9 @@
             
             // 如果是列表類型，設定資料篩選
             if (themeType === 'list') {
-                const dataType = getDataTypeByLabel(themeLabel);
+                const dataType = this.getDataTypeByLabel(themeLabel);
                 if (dataType) {
-                    applyListDataFilter(themeType, dataType, themeLabel);
+                    this.applyListDataFilter(themeType, dataType, themeLabel);
                 }
             }
         } else {
@@ -341,7 +342,7 @@
      * @param {string} dataType - 資料類型
      * @param {string} themeLabel - 主題標籤
      */
-    function applyListDataFilter(themeType, dataType, themeLabel) {
+    applyListDataFilter(themeType, dataType, themeLabel) {
         console.log(`✓ 應用資料篩選: ${dataType} (${themeLabel})`);
         
         // 觸發自定義事件，通知 list.js 更新資料
@@ -361,34 +362,23 @@
         }
     }
 
-
+    // ===== 初始化 =====
 
     /**
-     * 公開的 API 介面
+     * 初始化內容管理器
      */
-    const LayoutContent = {
-        // 核心函數
-        loadContent,
+    async initialize() {
+        if (this.initialized) {
+            console.log('ContentManager 已經初始化過');
+            return;
+        }
+
+        console.log('ContentManager 主初始化開始');
         
-        // 配置物件
-        themeFiles,
-        mainNavFiles,
-
-        // 預載功能
-        preloadAllThemes,
-        getThemeConfig,
-        getDataTypeByLabel,
-        getThemeTypeByName
-    };
-
-    // ===== 模組初始化 =====
-    
-    // DOM 載入完成後初始化
-    document.addEventListener('DOMContentLoaded', initialize);
-    
-    // 暴露全域 API
-    window.LayoutContent = LayoutContent;
-    window.switchPanel1Theme = switchPanel1Theme;
-    window.applyListDataFilter = applyListDataFilter;
-
-})();
+        // 預載所有內容
+        await this.preloadAllThemes();
+        
+        this.initialized = true;
+        console.log('✓ ContentManager 初始化完成');
+    }
+}
