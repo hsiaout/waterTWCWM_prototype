@@ -171,19 +171,19 @@ export class ContentManager {
             // Panel 2 主題對應的檔案路徑配置
             panel2Themes: {
                 list: {
-                    html: 'src/page/list2.html',
-                    js: 'src/page/list2.js'
+                    html: './src/page/list2.html',
+                    js: './src/page/list2.js'
                 },
                 map: {
-                    html: 'src/page/map.html',
+                    html: './src/page/map.html',
                     js: null
                 },
                 surround: {
-                    html: 'src/page/surround.html',
+                    html: './src/page/surround.html',
                     js: null
                 },
                 PID: {
-                    html: 'src/page/PID.html',
+                    html: './src/page/PID.html',
                     js: null
                 }
             },
@@ -193,19 +193,19 @@ export class ContentManager {
                 // 基礎模板配置 - 所有列表主題都使用同一個 list.html
                 templates: {
                     list: {
-                        html: 'src/page/list.html',
-                        js: 'src/page/list.js'
+                        html: './src/page/list.html',
+                        js: './src/page/list.js'
                     },
                     map: {
-                        html: 'src/page/map.html',
+                        html: './src/page/map.html',
                         js: null
                     },
                     PID: {
-                        html: 'src/page/PID.html',
+                        html: './src/page/PID.html',
                         js: null
                     },
                     surround: {
-                        html: 'src/page/surround.html',
+                        html: './src/page/surround.html',
                         js: null
                     }
                 }
