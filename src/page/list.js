@@ -289,15 +289,9 @@ $(document).ready(function() {
 });
 
 // 刷新數據功能
-        function refreshData() {
-            if ($.fn.DataTable.isDataTable('#data-table')) {
-                $('#data-table').DataTable().ajax.reload();
-            }
-            console.log('數據已刷新');
-        }
-        
-        // 匯出數據功能
-        function exportData() {
-            // 這裡可以實現數據匯出邏輯
-            alert('匯出功能開發中...');
-        }
+function refreshData() {
+	if ($.fn.DataTable.isDataTable('#data-table')) {
+		$('#data-table').DataTable().ajax.reload();
+	}
+	console.log('數據已刷新');
+}

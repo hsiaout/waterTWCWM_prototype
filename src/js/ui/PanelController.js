@@ -2,13 +2,25 @@
  * PanelController - UI 控制與面板管理
  * 負責管理面板顯示、主題切換和用戶互動
  */
+import { CONFIG } from '../config.js';
+
 export class PanelController {
-    constructor(layoutManager, contentManager) {
+    constructor(layoutManager) {
         this.layoutManager = layoutManager;
-        this.contentManager = contentManager;
         this.initialized = false;
         
-        console.log('PanelController 初始化...');
+        this.log('PanelController 初始化...');
+    }
+
+    /**
+     * 調試日誌輸出控制
+     * @param {*} message - 要輸出的訊息
+     * @param {...*} args - 額外的參數
+     */
+    log(message, ...args) {
+        if (CONFIG.DEBUG_MODE) {
+            console.log(message, ...args);
+        }
     }
 
     // ===== 面板控制 =====
@@ -44,22 +56,12 @@ export class PanelController {
     // ===== 主題管理 =====
 
     /**
-     * Panel 1 主題切換（供主導航使用）
-     * @param {string} themeType - 主題類型
-     * @param {string} themeLabel - 主題標籤
+     * 統一的主題切換方法（適用於所有面板）
+     * @param {string} panelId - 面板 ID ('panel1' 或 'panel2')
+     * @param {string} theme - 主題名稱 ('list', 'map', 'PID', 'surround')
+     * @param {string} [themeLabel] - 主題標籤（可選，用於 Panel1 的中文顯示名稱）
      */
-    switchPanel1Theme(themeType, themeLabel) {
-        if (this.contentManager) {
-            this.contentManager.switchPanel1Theme(themeType, themeLabel);
-        }
-    }
-
-    /**
-     * Panel 2 主題切換
-     * @param {string} panelId - 面板 ID
-     * @param {string} theme - 主題名稱
-     */
-    switchTheme(panelId, theme) {
+    switchTheme(panelId, theme, themeLabel = '') {
         // 隱藏指定面板的所有主題容器
         const allThemes = ['list', 'map', 'PID', 'surround'];
         
@@ -84,7 +86,11 @@ export class PanelController {
             }
         });
         
-        console.log(`✓ 切換 ${panelId} 到 ${theme} 主題`);
+        // 記錄日誌
+        const logMessage = themeLabel 
+            ? `✓ 切換 ${panelId} 到 ${theme} 主題 (${themeLabel})` 
+            : `✓ 切換 ${panelId} 到 ${theme} 主題`;
+        this.log(logMessage);
     }
 
     // ===== UI 顯示更新 =====
@@ -141,11 +147,11 @@ export class PanelController {
      */
     async initialize() {
         if (this.initialized) {
-            console.log('PanelController 已經初始化過');
+            this.log('PanelController 已經初始化過');
             return;
         }
 
-        console.log('PanelController 初始化開始');
+        this.log('PanelController 初始化開始');
 
         // 綁定事件
         this.bindEvents();
@@ -154,13 +160,13 @@ export class PanelController {
         this.updateWidthDisplay();
 
         // 設置默認主題
-        this.switchPanel1Theme('list', '供水');
+        this.switchTheme('panel1', 'list');
         if (document.getElementById('panel2').style.display !== 'none') {
             this.switchTheme('panel2', 'map');
         }
 
         this.initialized = true;
-        console.log('✓ PanelController 初始化完成');
+        this.log('✓ PanelController 初始化完成');
     }
 
     // ===== 公共 API =====
@@ -173,8 +179,7 @@ export class PanelController {
             resetPanels: () => this.resetPanels(),
             closePanel2: () => this.closePanel2(),
             showPanel2: () => this.showPanel2(),
-            showTheme: (panelId, theme) => this.switchTheme(panelId, theme),
-            switchPanel1Theme: (themeType, themeLabel) => this.switchPanel1Theme(themeType, themeLabel)
+            switchTheme: (panelId, theme, themeLabel) => this.switchTheme(panelId, theme, themeLabel)
         };
     }
 }

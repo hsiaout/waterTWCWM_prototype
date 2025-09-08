@@ -194,8 +194,6 @@
             }, 150);
 
             // 服務導航邏輯
-            console.log('導航到服務:', service);
-            
             const serviceNames = {
                 'supply': '供水管理',
                 'purify': '淨水處理', 
@@ -211,10 +209,7 @@
 
             // 這裡可以根據需要實現實際的頁面跳轉
             alert(`即將跳轉到：${serviceNames[service]}`);
-            
-            // 實際應用中可以使用：
             window.location.href = `/page.html`;
-            // 或者使用 SPA 路由
         }
 
         // 處理鍵盤事件

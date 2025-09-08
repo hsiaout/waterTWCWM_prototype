@@ -8,6 +8,17 @@ export class DragHandler {
 		this.isDragging = false;
 	}
 
+	/**
+	 * 調試日誌輸出控制
+	 * @param {*} message - 要輸出的訊息
+	 * @param {...*} args - 額外的參數
+	 */
+	log(message, ...args) {
+		if (CONFIG.DEBUG_MODE) {
+			console.log(message, ...args);
+		}
+	}
+
 	// 綁定拖拽事件
 	bindDragEvents() {
 		return ErrorHandler.safeExecute(() => {

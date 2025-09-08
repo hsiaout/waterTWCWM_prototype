@@ -1,10 +1,34 @@
+import { CONFIG } from '../config.js';
+
 // 錯誤處理工具類
 export class ErrorHandler {
+	/**
+	 * 調試日誌輸出控制
+	 * @param {*} message - 要輸出的訊息
+	 * @param {...*} args - 額外的參數
+	 */
+	static log(message, ...args) {
+		if (CONFIG.DEBUG_MODE) {
+			console.log(message, ...args);
+		}
+	}
+
+	/**
+	 * 警告日誌輸出控制
+	 * @param {*} message - 要輸出的訊息
+	 * @param {...*} args - 額外的參數
+	 */
+	static warn(message, ...args) {
+		if (CONFIG.DEBUG_MODE) {
+			console.warn(message, ...args);
+		}
+	}
+
 	static safeQuerySelector(selector, context = document) {
 		try {
 			const element = context.querySelector(selector);
 			if (!element) {
-				console.warn(`Element not found: ${selector}`);
+				this.warn(`Element not found: ${selector}`);
 			}
 			return element;
 		} catch (error) {

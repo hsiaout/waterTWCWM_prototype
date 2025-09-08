@@ -10,12 +10,34 @@ export class LayoutManager {
 		this.dragHandler = new DragHandler(this);
 	}
 
+	/**
+	 * 調試日誌輸出控制
+	 * @param {*} message - 要輸出的訊息
+	 * @param {...*} args - 額外的參數
+	 */
+	log(message, ...args) {
+		if (CONFIG.DEBUG_MODE) {
+			console.log(message, ...args);
+		}
+	}
+
+	/**
+	 * 警告日誌輸出控制
+	 * @param {*} message - 要輸出的訊息
+	 * @param {...*} args - 額外的參數
+	 */
+	warn(message, ...args) {
+		if (CONFIG.DEBUG_MODE) {
+			console.warn(message, ...args);
+		}
+	}
+
 	// 初始化佈局
 	async init(options = { skipContentLoad: false }) {
-		// simple-panels.html 已有完整結構，檢查是否存在
+		// page.html 已有完整結構，檢查是否存在
 		const existingWrapper = document.querySelector('#panel-wrapper');
 		if (!existingWrapper) {
-			console.error('未找到 #panel-wrapper，請確保使用 simple-panels.html');
+			console.error('未找到 #panel-wrapper，請確保使用 page.html');
 			return false;
 		}
 		
@@ -24,7 +46,6 @@ export class LayoutManager {
 		
 		// 應用初始狀態
 		this.applyState();
-		this.updateAuxiliaryButton();
 		
 		return true;
 	}
@@ -42,7 +63,7 @@ export class LayoutManager {
 		const resizer = document.querySelector('#resizer');
 
 		if (!panel1 || !panel2 || !resizer) {
-			console.warn('Required elements not available for state application');
+			this.warn('Required elements not available for state application');
 			return false;
 		}
 		
@@ -116,7 +137,6 @@ export class LayoutManager {
 		this.stateManager.resetState();
 		this.applyState();
 		this.stateManager.saveState();
-		this.updateAuxiliaryButton();
 	}
 
 	// 顯示 panel2（輔助面板）
@@ -126,7 +146,7 @@ export class LayoutManager {
 		
 		// 確保 options 存在，並檢查 useDefaultWidth 的值
 		const useDefaultWidth = options && options.useDefaultWidth === true;
-		console.log('showPanel2 called with options:', options);
+		this.log('showPanel2 called with options:', options);
 		if (useDefaultWidth) {
 			panel2Width = CONFIG.DEFAULT_WIDTH;
 		} else {
@@ -141,7 +161,6 @@ export class LayoutManager {
 			panel2: { ...currentState.panel2, width: panel2Width, visible: true }
 		};
 		this.setState(newState);
-		this.updateAuxiliaryButton();
 	}
 
 	// 隱藏 panel2
@@ -152,14 +171,13 @@ export class LayoutManager {
 			panel2: { ...currentState.panel2, width: currentState.panel2.width, visible: false }
 		};
 		this.setState(newState);
-		this.updateAuxiliaryButton();
 	}
 
 	// 應用手機版佈局
-	applyMobileLayout() {
-		console.log('LayoutManager: 應用手機版佈局...');
+	setMobileLayout() {
+		this.log('LayoutManager: 應用手機版佈局...');
 		
-		// 使用現有的 hidePanel2 方法，但不保存狀態
+		// 1. 設置佈局狀態 - Panel2 隱藏，Panel1 全寬
 		const currentState = this.stateManager.getState();
 		const mobileState = {
 			panel1: { ...currentState.panel1, width: 100, visible: true },
@@ -169,36 +187,29 @@ export class LayoutManager {
 		// 不保存到 localStorage，避免影響桌面版
 		this.setState(mobileState, { save: false });
 		
-		// 隱藏所有輔助面板按鈕
+		// 2. 隱藏所有輔助面板按鈕
 		const auxiliaryButtons = document.querySelectorAll('.js-open-panel2-btn');
 		auxiliaryButtons.forEach(btn => {
 			btn.style.display = 'none';
 		});
 		
-		console.log('✓ LayoutManager: 手機版佈局已應用');
+		this.log('✓ LayoutManager: 手機版佈局已應用');
 	}
 
 	// 恢復桌面版佈局
-	restoreDesktopLayout() {
-		console.log('LayoutManager: 恢復桌面版佈局...');
+	setDesktopLayout() {
+		this.log('LayoutManager: 恢復桌面版佈局...');
 		
-		// 顯示輔助面板按鈕
+		// 1. 顯示輔助面板按鈕
 		const auxiliaryButtons = document.querySelectorAll('.js-open-panel2-btn');
 		auxiliaryButtons.forEach(btn => {
 			btn.style.display = 'inline-block';
 		});
 		
-		// 恢復之前保存的狀態
+		// 3. 恢復之前保存的狀態
 		this.applyState();
-		this.updateAuxiliaryButton();
 		
-		console.log('✓ LayoutManager: 桌面版佈局已恢復');
-	}
-
-	// 更新輔助面板按鈕
-	updateAuxiliaryButton() {
-		// simple-panels.html 的按鈕邏輯由 updateWidthDisplay 處理
-		// 這裡保留空實現以避免錯誤
+		this.log('✓ LayoutManager: 桌面版佈局已恢復');
 	}
 
 	// 公共 API 方法

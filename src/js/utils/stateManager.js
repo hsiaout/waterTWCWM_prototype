@@ -8,6 +8,28 @@ export class StateManager {
 		this.loadState();
 	}
 
+	/**
+	 * 調試日誌輸出控制
+	 * @param {*} message - 要輸出的訊息
+	 * @param {...*} args - 額外的參數
+	 */
+	log(message, ...args) {
+		if (CONFIG.DEBUG_MODE) {
+			console.log(message, ...args);
+		}
+	}
+
+	/**
+	 * 警告日誌輸出控制
+	 * @param {*} message - 要輸出的訊息
+	 * @param {...*} args - 額外的參數
+	 */
+	warn(message, ...args) {
+		if (CONFIG.DEBUG_MODE) {
+			console.warn(message, ...args);
+		}
+	}
+
 	// 保存當前狀態
 	saveState() {
 		return ErrorHandler.safeExecute(() => {
@@ -46,19 +68,19 @@ export class StateManager {
 						// 驗證載入的狀態結構
 						if (this.validateState(parsedState)) {
 							this.state = parsedState;
-							console.log('Layout state loaded from localStorage');
+							this.log('Layout state loaded from localStorage');
 							return true;
 						} else {
-							console.warn('Invalid state structure, keeping default state');
+							this.warn('Invalid state structure, keeping default state');
 						}
 					} catch (parseError) {
 						console.error('Failed to parse saved state:', parseError);
 					}
 				} else {
-					console.log('No saved state found, using default state');
+					this.log('No saved state found, using default state');
 				}
 			} else {
-				console.log('Storage disabled, using default state');
+				this.log('Storage disabled, using default state');
 			}
 			
 			return true;

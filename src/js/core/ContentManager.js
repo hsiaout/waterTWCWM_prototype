@@ -2,12 +2,36 @@
  * ContentManager - 內容載入與主題管理
  * 負責管理頁面內容載入、主題切換和腳本管理
  */
+import { CONFIG } from '../config.js';
+
 export class ContentManager {
     constructor() {
         this.loadedScripts = new Set(); // 追蹤已載入的腳本，避免重複載入
         this.initialized = false;
         
-        console.log('ContentManager 初始化...');
+        this.log('ContentManager 初始化...');
+    }
+
+    /**
+     * 調試日誌輸出控制
+     * @param {*} message - 要輸出的訊息
+     * @param {...*} args - 額外的參數
+     */
+    log(message, ...args) {
+        if (CONFIG.DEBUG_MODE) {
+            console.log(message, ...args);
+        }
+    }
+
+    /**
+     * 警告日誌輸出控制
+     * @param {*} message - 要輸出的訊息
+     * @param {...*} args - 額外的參數
+     */
+    warn(message, ...args) {
+        if (CONFIG.DEBUG_MODE) {
+            console.warn(message, ...args);
+        }
     }
 
     // ===== 核心功能函數 =====
@@ -25,7 +49,7 @@ export class ContentManager {
             }
 
             const { html: url, js: jsUrl } = fileConfig;
-            console.log(`開始載入: ${url} -> ${targetElementId}`);
+            this.log(`開始載入: ${url} -> ${targetElementId}`);
 
             // 載入 HTML 內容
             const response = await fetch(url);
@@ -41,7 +65,7 @@ export class ContentManager {
             }
 
             targetElement.innerHTML = html;
-            console.log(`✓ 成功載入 ${url} 到 ${targetElementId}`);
+            this.log(`✓ 成功載入 ${url} 到 ${targetElementId}`);
 
             // 載入對應的 JavaScript 檔案
             if (jsUrl) {
@@ -72,11 +96,11 @@ export class ContentManager {
      */
     async loadScript(scriptUrl, contextId) {
         try {
-            console.log(`載入腳本: ${scriptUrl} (用於 ${contextId})`);
+            this.log(`載入腳本: ${scriptUrl} (用於 ${contextId})`);
 
             // 檢查是否已經載入過
             if (this.loadedScripts.has(scriptUrl)) {
-                console.log(`腳本 ${scriptUrl} 已存在，跳過重複載入`);
+                this.log(`腳本 ${scriptUrl} 已存在，跳過重複載入`);
                 return;
             }
 
@@ -84,7 +108,7 @@ export class ContentManager {
             const existingScript = document.querySelector(`script[data-page-script="${scriptUrl}"]`);
             if (existingScript) {
                 existingScript.remove();
-                console.log(`移除舊腳本: ${scriptUrl}`);
+                this.log(`移除舊腳本: ${scriptUrl}`);
             }
 
             const response = await fetch(scriptUrl);
@@ -103,7 +127,7 @@ export class ContentManager {
             document.head.appendChild(script);
             this.loadedScripts.add(scriptUrl);
 
-            console.log(`✓ 成功載入腳本: ${scriptUrl}`);
+            this.log(`✓ 成功載入腳本: ${scriptUrl}`);
 
         } catch (error) {
             console.error(`載入腳本失敗 ${scriptUrl}:`, error);
@@ -235,7 +259,7 @@ export class ContentManager {
      * 簡化版本：載入所有主題模板到對應容器
      */
     async preloadAllThemes() {
-        console.log('開始預載所有主題內容...');
+        this.log('開始預載所有主題內容...');
         
         const configs = this.getThemeConfigs();
         const loadPromises = [];
@@ -254,36 +278,9 @@ export class ContentManager {
         
         try {
             await Promise.all(loadPromises);
-            console.log('✓ 所有主題內容預載完成');
+            this.log('✓ 所有主題內容預載完成');
         } catch (error) {
-            console.warn('部分內容預載失敗:', error);
-        }
-    }
-
-    // ===== 主題切換 =====
-
-    /**
-     * Panel 1 主題切換函數（供主導航使用）
-     * 簡化版本：只負責顯示/隱藏對應的容器
-     * @param {string} themeType - 主題類型 (list, map, PID, surround)
-     * @param {string} themeLabel - 主題標籤（用於識別點擊的選項，僅用於日誌）
-     */
-    switchPanel1Theme(themeType, themeLabel) {
-        console.log(`主導航主題切換: ${themeType} (${themeLabel})`);
-
-        // 隱藏所有 Panel 1 容器
-        const panel1Containers = document.querySelectorAll('#panel1 .panel-container');
-        panel1Containers.forEach(container => {
-            container.style.display = 'none';
-        });
-
-        // 顯示對應的容器
-        const targetContainer = document.getElementById(`panel1-${themeType}`);
-        if (targetContainer) {
-            targetContainer.style.display = 'flex';
-            console.log(`✓ 顯示容器: panel1-${themeType}`);
-        } else {
-            console.error(`找不到容器: panel1-${themeType}`);
+            this.warn('部分內容預載失敗:', error);
         }
     }
 
@@ -294,16 +291,16 @@ export class ContentManager {
      */
     async initialize() {
         if (this.initialized) {
-            console.log('ContentManager 已經初始化過');
+            this.log('ContentManager 已經初始化過');
             return;
         }
 
-        console.log('ContentManager 主初始化開始');
+        this.log('ContentManager 主初始化開始');
         
         // 預載所有內容
         await this.preloadAllThemes();
         
         this.initialized = true;
-        console.log('✓ ContentManager 初始化完成');
+        this.log('✓ ContentManager 初始化完成');
     }
 }

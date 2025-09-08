@@ -14,7 +14,7 @@
     <!-- 使用既有的 CSS 樣式 -->
     <link rel="stylesheet" href="src/style/index.css">
     <link rel="stylesheet" href="src/style/page.css">
-    
+	<script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?version=3.111.0&features=es2017%2Ces2018%2Ces2019%2Ces6"></script>
 </head>
 <body>
 	<!-- 頂部導航 -->
@@ -44,31 +44,31 @@
 						aria-expanded="false" style="border: 2px solid var(--primary-color)!important"><i
 							class="fa-solid fa-table me-1"></i>主題選擇</button>
 					<ul class="dropdown-menu">
-						<li><a class="dropdown-item" href="#" onclick="switchPanel1Theme('list', '供水')">
+						<li><a class="dropdown-item" href="#" onclick="switchTheme('panel1', 'list')">
 								<div class="badge bg-primary me-1">列表</div>供水
 							</a></li>
-						<li><a class="dropdown-item" href="#" onclick="switchPanel1Theme('list', '淨水')">
+						<li><a class="dropdown-item" href="#" onclick="switchTheme('panel1', 'list')">
 								<div class="badge bg-primary me-1">列表</div>淨水
 							</a></li>
-						<li><a class="dropdown-item" href="#" onclick="switchPanel1Theme('list', '水質')">
+						<li><a class="dropdown-item" href="#" onclick="switchTheme('panel1', 'list')">
 								<div class="badge bg-primary me-1">列表</div>水質
 							</a></li>
-						<li><a class="dropdown-item" href="#" onclick="switchPanel1Theme('list', '分區計量')">
+						<li><a class="dropdown-item" href="#" onclick="switchTheme('panel1', 'list')">
 								<div class="badge bg-primary me-1">列表</div>分區計量
 							</a></li>
-						<li><a class="dropdown-item" href="#" onclick="switchPanel1Theme('list', '大表計量')">
+						<li><a class="dropdown-item" href="#" onclick="switchTheme('panel1', 'list')">
 								<div class="badge bg-primary me-1">列表</div>大表計量
 							</a></li>
 						<li>
 							<hr class="dropdown-divider">
 						</li>
-						<li><a class="dropdown-item" href="#" onclick="switchPanel1Theme('map', '地圖')">地圖</a></li>
-						<li><a class="dropdown-item" href="#" onclick="switchPanel1Theme('PID', '圖譜')">圖譜</a></li>
-						<li><a class="dropdown-item" href="#" onclick="switchPanel1Theme('surround', '環景')">環景</a></li>
+						<li><a class="dropdown-item" href="#" onclick="switchTheme('panel1', 'map')">地圖</a></li>
+						<li><a class="dropdown-item" href="#" onclick="switchTheme('panel1', 'PID')">圖譜</a></li>
+						<li><a class="dropdown-item" href="#" onclick="switchTheme('panel1', 'surround')">環景</a></li>
 						<li>
 							<hr class="dropdown-divider">
 						</li>
-						<li><a class="dropdown-item" href="#" onclick="switchPanel1Theme('map', '緊急應變圖台')">緊急應變圖台</a></li>
+						<li><a class="dropdown-item" href="#" onclick="switchTheme('panel1', 'map')">緊急應變圖台</a></li>
 					</ul>
 				</div>
 			</div>
@@ -81,7 +81,7 @@
 			<div class="col-auto d-none d-sm-block">
 				<span id="panel1-width">50%</span>/
 				<span id="panel2-width">50%</span>
-				<button class="btn btn-primary btn-sm" onclick="resetPanels()">重置 50:50</button>
+				<button class="btn btn-primary btn-sm" onclick="resetPanels()">重置Config寬度</button>
 			</div>
 		</div>
 	</header>
@@ -136,7 +136,7 @@
 							</div>
 						</div>
 					</div>
-					<div id="panel1-list-content" class="panel-content"></div>
+					<div id="panel1-list-content" class="panel-content" style="background-color: lightseagreen;"></div>
 				</div>
 	
 				<!-- Panel 1 - Map Theme -->
@@ -178,7 +178,7 @@
 							</div>
 						</div>
 					</div>
-					<div id="panel1-map-content" class="panel-content"></div>
+					<div id="panel1-map-content" class="panel-content" style="background-color: lightpink;"></div>
 				</div>
 	
 				<!-- Panel 1 - PID Theme -->
@@ -210,7 +210,7 @@
 							</div>
 						</div>
 					</div>
-					<div id="panel1-PID-content" class="panel-content"></div>
+					<div id="panel1-PID-content" class="panel-content" style="background-color: lightskyblue;"></div>
 				</div>
 	
 				<!-- Panel 1 - Surround Theme -->
@@ -242,7 +242,7 @@
 							</div>
 						</div>
 					</div>
-					<div id="panel1-surround-content" class="panel-content"></div>
+					<div id="panel1-surround-content" class="panel-content" style="background-color: yellowgreen;"></div>
 				</div>
 			</div>
 			<!-- Resizer -->
@@ -256,7 +256,7 @@
 					<div class="panel-header">
 						<div class="panel-title">
 							輔助視窗：
-							<select class="form-select form-select-sm theme-selector ms-2" id="panel2-theme-selector-list" onchange="showTheme('panel2', this.value)" style="width: auto;">
+							<select class="form-select form-select-sm theme-selector ms-2" id="panel2-theme-selector-list" onchange="switchTheme('panel2', this.value)" style="width: auto;">
 								<option value="list" selected>列表</option>
 								<option value="map">地圖</option>
 								<option value="PID">圖譜</option>
@@ -306,7 +306,7 @@
 							</div>
 						</div>
 					</div>
-					<div id="panel2-list-content" class="panel-content"></div>
+					<div id="panel2-list-content" class="panel-content" style="background-color: lightseagreen;"></div>
 				</div>
 	
 				<!-- Panel 2 - Map Theme -->
@@ -314,7 +314,7 @@
 					<div class="panel-header">
 						<div class="panel-title">
 							輔助視窗：
-							<select class="form-select form-select-sm theme-selector ms-2" id="panel2-theme-selector-map" onchange="showTheme('panel2', this.value)" style="width: auto;">
+							<select class="form-select form-select-sm theme-selector ms-2" id="panel2-theme-selector-map" onchange="switchTheme('panel2', this.value)" style="width: auto;">
 								<option value="list">列表</option>
 								<option value="map" selected>地圖</option>
 								<option value="PID">圖譜</option>
@@ -355,7 +355,7 @@
 							</div>
 						</div>
 					</div>
-					<div id="panel2-map-content" class="panel-content"></div>
+					<div id="panel2-map-content" class="panel-content" style="background-color: lightpink;"></div>
 				</div>
 	
 				<!-- Panel 2 - PID Theme -->
@@ -363,7 +363,7 @@
 					<div class="panel-header">
 						<div class="panel-title">
 							輔助視窗：
-							<select class="form-select form-select-sm theme-selector ms-2" id="panel2-theme-selector-PID" onchange="showTheme('panel2', this.value)" style="width: auto;">
+							<select class="form-select form-select-sm theme-selector ms-2" id="panel2-theme-selector-PID" onchange="switchTheme('panel2', this.value)" style="width: auto;">
 								<option value="list">列表</option>
 								<option value="map">地圖</option>
 								<option value="PID" selected>圖譜</option>
@@ -394,14 +394,14 @@
 							</div>
 						</div>
 					</div>
-					<div id="panel2-PID-content" class="panel-content"></div>
+					<div id="panel2-PID-content" class="panel-content" style="background-color: lightskyblue;"></div>
 				</div>
 				<!-- Panel 2 - Surround Theme -->
-				<div id="panel2-surround" class="panel-container" data-theme="surround" style="display: none;">
+				<div id="panel2-surround" class="panel-container" data-theme="surround" style="background-color: lightskyblue;">
 					<div class="panel-header">
 						<div class="panel-title">
 							輔助視窗：
-							<select class="form-select form-select-sm theme-selector ms-2" id="panel2-theme-selector-surround" onchange="showTheme('panel2', this.value)" style="width: auto;">
+							<select class="form-select form-select-sm theme-selector ms-2" id="panel2-theme-selector-surround" onchange="switchTheme('panel2', this.value)" style="width: auto;">
 								<option value="list">列表</option>
 								<option value="map">地圖</option>
 								<option value="PID">圖譜</option>
@@ -432,7 +432,7 @@
 							</div>
 						</div>
 					</div>
-					<div id="panel2-surround-content" class="panel-content"></div>
+					<div id="panel2-surround-content" class="panel-content" style="background-color: yellowgreen;"></div>
 				</div>
 			</div>
 		</div>
@@ -446,18 +446,6 @@
 	<script src="https://cdn.datatables.net/fixedcolumns/5.0.4/js/fixedColumns.bootstrap5.min.js"></script>
 	<link rel="stylesheet" href="https://cdn.datatables.net/2.3.3/css/dataTables.bootstrap5.min.css">
 	<link rel="stylesheet" href="https://cdn.datatables.net/fixedcolumns/5.0.4/css/fixedColumns.bootstrap5.min.css">
-    <script type="module">
-        // 使用新的統一應用程式控制器
-        import { AppController } from './src/js/AppController.js';
-        
-        console.log('simple-panels.html: 等待 AppController 初始化...');
-        
-        // 等待 AppController 完成初始化
-        document.addEventListener('DOMContentLoaded', async function() {
-            // AppController 會自動初始化，我們只需要等待
-            console.log('simple-panels.html: DOM 載入完成，等待初始化...');
-        });
-    </script>
-	<script src="src/js/layout.js"></script>
+    <script type="module" src="./src/js/AppController.js"></script>
 </body>
 </html>
