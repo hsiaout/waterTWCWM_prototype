@@ -120,6 +120,9 @@ body {
 }
 #panel2 {
 	border: 2px solid #c8d1d4;
+	&.synced{
+		border-color: #4a90e2;
+	}
 }
 
 .panel-header {
@@ -183,10 +186,17 @@ body {
 }
 
 .resizer-line {
+	position: absolute;
+	left: 50%;
+	top: 50%;
+	transform: translate(-50%, -50%);
     width: 2px;
     height: 20px;
     background: #6c757d;
     border-radius: 1px;
+	.dragging &{
+		background: white;
+	}
 }
 
 .panel-hidden {
@@ -207,6 +217,33 @@ body {
 
 .dropdown-menu{
 	box-shadow: 1px 1px 10px rgba(black, 0.1)
+}
+
+.sync-btn{
+	position: absolute;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 36px;
+	height: 36px;
+	background-color: white;
+	z-index: 10;
+	border-radius: 100%;
+	top: 10px;
+	cursor: pointer;
+	box-shadow: 0px 1px 5px rgba(black, 0.2);
+	color: rgba(black, 0.4);
+	&.is-active{
+		background-color: #4a90e2;
+		box-shadow: 0 0 10px 2px rgb(0, 208, 255);
+		color: white;
+		&:hover{
+			background-color: darken(#4a90e2, 10%);
+		}
+	}
+	&:hover{
+		background-color: #eee;
+	}
 }
 
 // 響應式設計

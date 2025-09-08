@@ -8,6 +8,8 @@ export class PanelController {
     constructor(layoutManager) {
         this.layoutManager = layoutManager;
         this.initialized = false;
+        this.isSynced = false;  // 新增：同步狀態
+        this.syncCallbacks = [];  // 新增：同步回調函式陣列
         
         this.log('PanelController 初始化...');
     }
@@ -91,13 +93,16 @@ export class PanelController {
             ? `✓ 切換 ${panelId} 到 ${theme} 主題 (${themeLabel})` 
             : `✓ 切換 ${panelId} 到 ${theme} 主題`;
         this.log(logMessage);
-    }
+        
 
-    // ===== UI 顯示更新 =====
+	}
 
-    /**
+
+	// ===== UI 顯示更新 =====
+	/**
      * 更新面板寬度顯示
      */
+    
     updateWidthDisplay() {
         if (this.layoutManager) {
             const state = this.layoutManager.getState();
@@ -118,8 +123,97 @@ export class PanelController {
             } else {
                 document.querySelectorAll(".js-open-panel2-btn").forEach(btn => {
                     btn.style.display = "inline-block";
-                });
+				});
+			}
+		}
+	}
+
+    // ===== 同步功能 =====
+
+    /**
+     * 切換同步狀態 (僅狀態和樣式，無實際同步功能)
+     * @param {Function} [callback] - 同步狀態變更時的回調函式
+     */
+    toggleSync(callback) {
+        this.isSynced = !this.isSynced;
+        
+        const syncBtn = document.querySelector('.sync-btn');
+        
+        if (this.isSynced) {
+            // 啟用同步樣式
+            syncBtn?.classList.add('is-active');
+            this.applyPanelSyncBorder();
+            this.log('🔗 同步樣式已啟用');
+        } else {
+            // 停用同步樣式
+            syncBtn?.classList.remove('is-active');
+            this.removePanelSyncBorder();
+            this.log('🔗 同步樣式已停用');
+        }
+        
+        // 執行回調函式
+        if (callback && typeof callback === 'function') {
+            callback(this.isSynced);
+        }
+        
+        // 執行所有註冊的回調函式
+        this.syncCallbacks.forEach(cb => {
+            try {
+                cb(this.isSynced);
+            } catch (error) {
+                console.error('同步回調函式執行錯誤:', error);
             }
+        });
+        
+        return this.isSynced;
+    }
+
+    /**
+     * 註冊同步狀態變更回調函式
+     * @param {Function} callback - 回調函式
+     */
+    onSyncChange(callback) {
+        if (typeof callback === 'function') {
+            this.syncCallbacks.push(callback);
+        }
+    }
+
+    /**
+     * 移除同步狀態變更回調函式
+     * @param {Function} callback - 要移除的回調函式
+     */
+    offSyncChange(callback) {
+        const index = this.syncCallbacks.indexOf(callback);
+        if (index > -1) {
+            this.syncCallbacks.splice(index, 1);
+        }
+    }
+
+    /**
+     * 獲取同步狀態
+     * @returns {boolean} 當前同步狀態
+     */
+    getSyncStatus() {
+        return this.isSynced;
+    }
+
+    /**
+     * 應用同步時的面板邊框樣式
+     */
+    applyPanelSyncBorder() {
+        const panel2 = document.getElementById('panel2');
+        if (panel2) {
+            panel2.classList.add('synced');
+        }
+    }
+
+    /**
+     * 移除同步時的面板邊框樣式
+     */
+    removePanelSyncBorder() {
+        const panel2 = document.getElementById('panel2');
+        if (panel2) {
+            panel2.classList.remove('synced');
         }
     }
 
@@ -129,6 +223,19 @@ export class PanelController {
      * 綁定事件監聽器
      */
     bindEvents() {
+        // 綁定同步按鈕點擊事件
+        const syncBtn = document.querySelector('.sync-btn');
+        if (syncBtn) {
+            syncBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                this.toggleSync();
+            });
+            this.log('✓ 同步按鈕事件已綁定');
+        } else {
+            this.log('⚠️ 未找到同步按鈕元素');
+        }
+
         // 監聽狀態變化來更新顯示
         if (this.layoutManager) {
             const originalSetState = this.layoutManager.setState.bind(this.layoutManager);
@@ -179,7 +286,12 @@ export class PanelController {
             resetPanels: () => this.resetPanels(),
             closePanel2: () => this.closePanel2(),
             showPanel2: () => this.showPanel2(),
-            switchTheme: (panelId, theme, themeLabel) => this.switchTheme(panelId, theme, themeLabel)
+            switchTheme: (panelId, theme, themeLabel) => this.switchTheme(panelId, theme, themeLabel),
+            // 同步狀態相關的全域函數 (僅狀態切換，無實際同步功能)
+            toggleSync: (callback) => this.toggleSync(callback),
+            getSyncStatus: () => this.getSyncStatus(),
+            onSyncChange: (callback) => this.onSyncChange(callback),
+            offSyncChange: (callback) => this.offSyncChange(callback)
         };
     }
 }

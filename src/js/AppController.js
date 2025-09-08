@@ -193,13 +193,38 @@ export class AppController {
             this.bindResponsiveEvents();
 
             this.initialized = true;
-            this.log(`🎉 AppController 所有模組初始化完成！(${this.isMobile ? '手機' : '桌面'}版)`);
+			this.log(`🎉 AppController 所有模組初始化完成！(${this.isMobile ? '手機' : '桌面'}版)`);
+			
+			// 🎯 發送初始化完成事件
+        	this.dispatchInitializedEvent();
 
         } catch (error) {
             console.error('❌ AppController 初始化失敗:', error);
             throw error;
         }
-    }
+	}
+	
+	/**
+	 * 發送初始化完成事件
+	 */
+	dispatchInitializedEvent() {
+		try {
+			// 發送自定義事件
+			const event = new CustomEvent('appControllerReady', {
+				detail: {
+					timestamp: Date.now(),
+					isMobile: this.isMobile,
+					modules: this.getModules()
+				}
+			});
+			
+			window.dispatchEvent(event);
+			this.log('📡 已發送 appControllerReady 事件');
+			
+		} catch (error) {
+			console.error('❌ 發送初始化事件失敗:', error);
+		}
+	}
 
     /**
      * 設置全域 API 供 HTML 調用
@@ -225,6 +250,12 @@ export class AppController {
             // 統一使用 AppController 的協調版本（包含設備檢查和完整邏輯）
             setMobileLayout: () => this.layoutManager?.setMobileLayout(),
             setDesktopLayout: () => this.layoutManager?.setDesktopLayout()
+        };
+
+        // 設置同步狀態相關的全域 API (僅狀態切換，無實際同步功能)
+        window.SyncUtils = {
+            toggle: (callback) => this.panelController?.toggleSync(callback),
+            getStatus: () => this.panelController?.getSyncStatus()
         };
 
         // 設置 ContentManager 相關的全域 API (根據配置決定是否啟用)

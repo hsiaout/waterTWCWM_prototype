@@ -22,7 +22,7 @@ export class DragHandler {
 	// 綁定拖拽事件
 	bindDragEvents() {
 		return ErrorHandler.safeExecute(() => {
-			const resizer = ErrorHandler.safeQuerySelector('#resizer');
+			const resizer = ErrorHandler.safeQuerySelector('#panel-resizer');
 			if (!resizer) {
 				console.error('Resizer element not found, cannot bind drag events');
 				return false;
@@ -50,7 +50,7 @@ export class DragHandler {
 			
 			const panel1 = ErrorHandler.safeQuerySelector('#panel1');
 			const panel2 = ErrorHandler.safeQuerySelector('#panel2');
-			const resizer = ErrorHandler.safeQuerySelector('#resizer');
+			const resizer = ErrorHandler.safeQuerySelector('#panel-resizer');
 			
 			// 移除過渡效果
 			if (panel1 && panel2) {
@@ -59,7 +59,7 @@ export class DragHandler {
 			}
 			
 			if (resizer) {
-				resizer.classList.add('dragging');
+				resizer.parentElement.classList.add('dragging');
 			}
 			
 			document.body.style.cursor = 'col-resize';
@@ -103,7 +103,7 @@ export class DragHandler {
 			
 			const panel1 = ErrorHandler.safeQuerySelector('#panel1');
 			const panel2 = ErrorHandler.safeQuerySelector('#panel2');
-			const resizer = ErrorHandler.safeQuerySelector('#resizer');
+			const resizer = ErrorHandler.safeQuerySelector('#panel-resizer');
 			
 			// 恢復過渡效果
 			if (panel1 && panel2) {
@@ -112,7 +112,7 @@ export class DragHandler {
 			}
 			
 			if (resizer) {
-				resizer.classList.remove('dragging');
+				resizer.parentElement.classList.remove('dragging');
 			}
 			
 			document.body.style.cursor = '';

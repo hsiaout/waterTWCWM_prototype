@@ -60,7 +60,7 @@ export class LayoutManager {
 	applyVisualState(state) {
 		const panel1 = document.querySelector('#panel1');
 		const panel2 = document.querySelector('#panel2');
-		const resizer = document.querySelector('#resizer');
+		const resizer = document.querySelector('#panel-resizer');
 
 		if (!panel1 || !panel2 || !resizer) {
 			this.warn('Required elements not available for state application');
@@ -84,9 +84,9 @@ export class LayoutManager {
 		
 		// 控制分隔線的顯示
 		if (!state.panel1.visible || !state.panel2.visible) {
-			resizer.classList.add('resizer-hidden');
+			resizer.parentElement.classList.add('resizer-hidden');
 		} else {
-			resizer.classList.remove('resizer-hidden');
+			resizer.parentElement.classList.remove('resizer-hidden');
 		}
 		
 		return true;

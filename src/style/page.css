@@ -117,6 +117,9 @@ body {
 #panel2 {
   border: 2px solid #c8d1d4;
 }
+#panel2.synced {
+  border-color: #4a90e2;
+}
 
 .panel-header {
   background: #f8f9fa;
@@ -174,10 +177,17 @@ body {
 }
 
 .resizer-line {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
   width: 2px;
   height: 20px;
   background: #6c757d;
   border-radius: 1px;
+}
+.dragging .resizer-line {
+  background: white;
 }
 
 .panel-hidden {
@@ -197,6 +207,33 @@ body {
 
 .dropdown-menu {
   box-shadow: 1px 1px 10px rgba(0, 0, 0, 0.1);
+}
+
+.sync-btn {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  background-color: white;
+  z-index: 10;
+  border-radius: 100%;
+  top: 10px;
+  cursor: pointer;
+  box-shadow: 0px 1px 5px rgba(0, 0, 0, 0.2);
+  color: rgba(0, 0, 0, 0.4);
+}
+.sync-btn.is-active {
+  background-color: #4a90e2;
+  box-shadow: 0 0 10px 2px rgb(0, 208, 255);
+  color: white;
+}
+.sync-btn.is-active:hover {
+  background-color: rgb(34.3857142857, 117.3857142857, 214.6142857143);
+}
+.sync-btn:hover {
+  background-color: #eee;
 }
 
 @media (max-width: 768px) {

@@ -246,8 +246,10 @@
 				</div>
 			</div>
 			<!-- Resizer -->
-			<div id="resizer" class="resizer">
+			<div class="resizer">
+				<div id="panel-resizer" class="w-100 h-100"></div>
 				<div class="resizer-line"></div>
+				<div class="sync-btn"><i class="fa-solid fa-link"></i></div>
 			</div>
 			
 			<div id="panel2">
@@ -447,5 +449,22 @@
 	<link rel="stylesheet" href="https://cdn.datatables.net/2.3.3/css/dataTables.bootstrap5.min.css">
 	<link rel="stylesheet" href="https://cdn.datatables.net/fixedcolumns/5.0.4/css/fixedColumns.bootstrap5.min.css">
     <script type="module" src="./src/js/AppController.js"></script>
+
+	<script>
+		// ✅ 監聽 AppController 初始化完成事件
+		window.addEventListener('appControllerReady', function () {
+			// 定義回調函式
+			function mySyncCallback(isSync) {
+				console.log('sync callback:', isSync);
+			}
+			function haha() {
+				console.log('haha');
+			}
+
+			// 註冊回調
+			window.onSyncChange(mySyncCallback);
+			window.onSyncChange(haha);
+		});
+	</script>
 </body>
 </html>
