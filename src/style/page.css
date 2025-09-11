@@ -7,6 +7,19 @@ body {
   overflow: hidden;
 }
 
+.main-header {
+  position: relative;
+}
+
+.main-header-title {
+  display: flex;
+  align-items: center;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+}
+
 .main-content {
   position: relative;
   background-color: rgb(213, 222, 226);
